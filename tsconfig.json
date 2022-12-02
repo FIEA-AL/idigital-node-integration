@@ -1,0 +1,53 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "strict": true,
+    "noEmit": false,
+    "allowJs": true,
+    "outDir": "lib",
+    "rootDir": "src",
+    "types": ["node"],
+    "sourceMap": true,
+    "target": "es2020",
+    "module": "es2020",
+    "declaration": true,
+    "incremental": false,
+    "skipLibCheck": false,
+    "importHelpers": true,
+    "removeComments": true,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "lib": ["es2020", "DOM"],
+    "inlineSourceMap": false,
+    "strictNullChecks": false,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "moduleDetection": "force",
+    "skipDefaultLibCheck": true,
+    "strictBindCallApply": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": [
+      "src/interfaces" ,
+      "node_modules/@types"
+    ],
+    "paths": {
+      "@enums/*": ["src/enums/*"],
+      "@consts/*": ["src/consts/*"],
+      "@errors/*": ["src/errors/*"],
+      "@classes/*": ["src/classes/*"],
+      "@functions/*": ["src/functions/*"],
+      "@interfaces/*": ["src/interfaces/*"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "lib"
+  ]
+}

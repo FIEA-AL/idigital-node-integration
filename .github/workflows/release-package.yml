@@ -1,0 +1,25 @@
+name: IDigital Node Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.17.0
+          registry-url: https://npm.pkg.github.com/
+      - name: Yarn install and build
+        run: |
+          yarn install
+          yarn build
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
