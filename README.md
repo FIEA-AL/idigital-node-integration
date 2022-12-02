@@ -10,10 +10,10 @@
 
 ```bash
 # Yarn
-$ yarn add @idigital/node-integration
+$ yarn add https://github.com/FIEA-AL/idigital-node-integration.git@v0.1.0
 
 # NPM
-$ npm install @idigital/node-integration
+$ npm install https://github.com/FIEA-AL/idigital-node-integration.git@v0.1.0
 ```
 
 ## Development
