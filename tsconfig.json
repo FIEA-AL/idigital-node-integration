@@ -1,0 +1,50 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "strict": true,
+    "noEmit": false,
+    "allowJs": true,
+    "rootDir": "src",
+    "sourceMap": true,
+    "types": ["node"],
+    "target": "es2018",
+    "declaration": false,
+    "incremental": false,
+    "skipLibCheck": false,
+    "importHelpers": true,
+    "removeComments": true,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "lib": ["es2020", "DOM"],
+    "inlineSourceMap": false,
+    "strictNullChecks": false,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "strictBindCallApply": false,
+    "skipDefaultLibCheck": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": [
+      "src/interfaces" ,
+      "node_modules/@types"
+    ],
+    "paths": {
+      "@enums/*": ["src/enums/*"],
+      "@consts/*": ["src/consts/*"],
+      "@errors/*": ["src/errors/*"],
+      "@classes/*": ["src/classes/*"],
+      "@decorators/*": ["src/decorators/*"],
+      "@interfaces/*": ["src/interfaces/*"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
