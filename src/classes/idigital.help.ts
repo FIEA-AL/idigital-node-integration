@@ -1,4 +1,5 @@
 import IDigitalException from "@errors/idigital.exception";
+import { IDigitalOptions } from "@interfaces/idigital";
 import { MESSAGES } from '@errors/messages.const';
 import pkceChallenge from 'pkce-challenge';
 import querystring from "querystring-es3";
@@ -6,6 +7,12 @@ import crypto from 'crypto';
 import url from "url";
 
 export default class IDigitalHelp {
+	public static applyVerboseMode(data: any, options: IDigitalOptions) {
+		if (options.verbose) {
+			console.error(data);
+		}
+	}
+
 	public static getParameterizedUrl(url: string, params: Array<[string, string]>): URL {
 		const $url = new URL(url);
 		const $params = new URLSearchParams(params);
@@ -36,24 +43,26 @@ export default class IDigitalHelp {
 		}
 	}
 
-	public static getRandomBytes(bytes: number = 32) {
+	public static getRandomBytes(bytes: number = 32, options: IDigitalOptions) {
 		try {
 			const randomBytes = crypto.randomBytes(bytes);
 			return this.getBase64Encoded(randomBytes);
-		} catch (error) {
+		} catch (e) {
+			IDigitalHelp.applyVerboseMode(e, options);
 			const message = MESSAGES.COULD_NOT_GENERATE_BYTES;
 			throw new IDigitalException(500, message);
 		}
 	}
 
-	public static getPkceKeysPair() {
+	public static getPkceKeysPair(options: IDigitalOptions) {
 		try {
 			const data = pkceChallenge();
 			return {
 				codeVerifier: data.code_verifier,
 				codeChallenge: data.code_challenge
 			};
-		} catch (error) {
+		} catch (e) {
+			IDigitalHelp.applyVerboseMode(e, options);
 			const message = MESSAGES.COULD_NOT_GENERATE_PKCE;
 			throw new IDigitalException(500, message);
 		}

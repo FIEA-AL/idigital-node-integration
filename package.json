@@ -1,7 +1,7 @@
 {
   "private": false,
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "@fiea-al/idigital-node-integration",
   "keywords": [
     "IDigital",
@@ -50,7 +50,7 @@
   "types": "./dist/types/index.d.ts",
   "main": "./dist/lib/cjs/index.js",
   "browser": {
-    "stream": "stream",
+    "stream": "readable-stream",
     "http": "stream-http",
     "path": "path-browserify",
     "https": "https-browserify",
@@ -83,6 +83,7 @@
     "https-browserify": "1.0.0",
     "jose": "4.13.1",
     "node-jose": "2.2.0",
+    "normalize-url": "8.0.0",
     "passport-strategy": "1.0.0",
     "path-browserify": "1.0.1",
     "pkce-challenge": "3.0.0",

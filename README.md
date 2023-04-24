@@ -16,10 +16,10 @@ The library is not hosted in the NPM registry. However, fortunately, it is possi
 
 ```bash
 # Yarn
-$ yarn add https://github.com/FIEA-AL/idigital-node-integration.git@v1.0.0
+$ yarn add https://github.com/FIEA-AL/idigital-node-integration.git#v1.0.0
 
 # NPM
-$ npm install https://github.com/FIEA-AL/idigital-node-integration.git@v1.0.0
+$ npm install https://github.com/FIEA-AL/idigital-node-integration.git#v1.0.0
 ```
 
 ## Documentation

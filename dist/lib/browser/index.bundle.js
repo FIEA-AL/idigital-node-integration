@@ -24139,11 +24139,11 @@ var require_baseGet = __commonJS({
   "node_modules/lodash/_baseGet.js"(exports, module) {
     var castPath = require_castPath();
     var toKey = require_toKey();
-    function baseGet(object, path2) {
-      path2 = castPath(path2, object);
-      var index = 0, length = path2.length;
+    function baseGet(object, path) {
+      path = castPath(path, object);
+      var index = 0, length = path.length;
       while (object != null && index < length) {
-        object = object[toKey(path2[index++])];
+        object = object[toKey(path[index++])];
       }
       return index && index == length ? object : void 0;
     }
@@ -24180,8 +24180,8 @@ var require_parent = __commonJS({
   "node_modules/lodash/_parent.js"(exports, module) {
     var baseGet = require_baseGet();
     var baseSlice = require_baseSlice();
-    function parent(object, path2) {
-      return path2.length < 2 ? object : baseGet(object, baseSlice(path2, 0, -1));
+    function parent(object, path) {
+      return path.length < 2 ? object : baseGet(object, baseSlice(path, 0, -1));
     }
     module.exports = parent;
   }
@@ -24194,10 +24194,10 @@ var require_baseUnset = __commonJS({
     var last = require_last();
     var parent = require_parent();
     var toKey = require_toKey();
-    function baseUnset(object, path2) {
-      path2 = castPath(path2, object);
-      object = parent(object, path2);
-      return object == null || delete object[toKey(last(path2))];
+    function baseUnset(object, path) {
+      path = castPath(path, object);
+      object = parent(object, path);
+      return object == null || delete object[toKey(last(path))];
     }
     module.exports = baseUnset;
   }
@@ -24247,10 +24247,10 @@ var require_omit = __commonJS({
         return result;
       }
       var isDeep = false;
-      paths = arrayMap(paths, function(path2) {
-        path2 = castPath(path2, object);
-        isDeep || (isDeep = path2.length > 1);
-        return path2;
+      paths = arrayMap(paths, function(path) {
+        path = castPath(path, object);
+        isDeep || (isDeep = path.length > 1);
+        return path;
       });
       copyObject(object, getAllKeysIn(object), result);
       if (isDeep) {
@@ -24274,14 +24274,14 @@ var require_baseSet = __commonJS({
     var isIndex = require_isIndex();
     var isObject3 = require_isObject();
     var toKey = require_toKey();
-    function baseSet(object, path2, value, customizer) {
+    function baseSet(object, path, value, customizer) {
       if (!isObject3(object)) {
         return object;
       }
-      path2 = castPath(path2, object);
-      var index = -1, length = path2.length, lastIndex = length - 1, nested = object;
+      path = castPath(path, object);
+      var index = -1, length = path.length, lastIndex = length - 1, nested = object;
       while (nested != null && ++index < length) {
-        var key = toKey(path2[index]), newValue = value;
+        var key = toKey(path[index]), newValue = value;
         if (key === "__proto__" || key === "constructor" || key === "prototype") {
           return object;
         }
@@ -24289,7 +24289,7 @@ var require_baseSet = __commonJS({
           var objValue = nested[key];
           newValue = customizer ? customizer(objValue, key, nested) : void 0;
           if (newValue === void 0) {
-            newValue = isObject3(objValue) ? objValue : isIndex(path2[index + 1]) ? [] : {};
+            newValue = isObject3(objValue) ? objValue : isIndex(path[index + 1]) ? [] : {};
           }
         }
         assignValue(nested, key, newValue);
@@ -24310,9 +24310,9 @@ var require_basePickBy = __commonJS({
     function basePickBy(object, paths, predicate) {
       var index = -1, length = paths.length, result = {};
       while (++index < length) {
-        var path2 = paths[index], value = baseGet(object, path2);
-        if (predicate(value, path2)) {
-          baseSet(result, castPath(path2, object), value);
+        var path = paths[index], value = baseGet(object, path);
+        if (predicate(value, path)) {
+          baseSet(result, castPath(path, object), value);
         }
       }
       return result;
@@ -24340,11 +24340,11 @@ var require_hasPath = __commonJS({
     var isIndex = require_isIndex();
     var isLength = require_isLength();
     var toKey = require_toKey();
-    function hasPath(object, path2, hasFunc) {
-      path2 = castPath(path2, object);
-      var index = -1, length = path2.length, result = false;
+    function hasPath(object, path, hasFunc) {
+      path = castPath(path, object);
+      var index = -1, length = path.length, result = false;
       while (++index < length) {
-        var key = toKey(path2[index]);
+        var key = toKey(path[index]);
         if (!(result = object != null && hasFunc(object, key))) {
           break;
         }
@@ -24365,8 +24365,8 @@ var require_hasIn = __commonJS({
   "node_modules/lodash/hasIn.js"(exports, module) {
     var baseHasIn = require_baseHasIn();
     var hasPath = require_hasPath();
-    function hasIn(object, path2) {
-      return object != null && hasPath(object, path2, baseHasIn);
+    function hasIn(object, path) {
+      return object != null && hasPath(object, path, baseHasIn);
     }
     module.exports = hasIn;
   }
@@ -24378,8 +24378,8 @@ var require_basePick = __commonJS({
     var basePickBy = require_basePickBy();
     var hasIn = require_hasIn();
     function basePick(object, paths) {
-      return basePickBy(object, paths, function(value, path2) {
-        return hasIn(object, path2);
+      return basePickBy(object, paths, function(value, path) {
+        return hasIn(object, path);
       });
     }
     module.exports = basePick;
@@ -46485,11 +46485,11 @@ var require_mime_types = __commonJS({
       }
       return exts[0];
     }
-    function lookup(path2) {
-      if (!path2 || typeof path2 !== "string") {
+    function lookup(path) {
+      if (!path || typeof path !== "string") {
         return false;
       }
-      var extension2 = extname("x." + path2).toLowerCase().substr(1);
+      var extension2 = extname("x." + path).toLowerCase().substr(1);
       if (!extension2) {
         return false;
       }
@@ -46746,7 +46746,7 @@ var require_form_data = __commonJS({
   "node_modules/form-data/lib/form_data.js"(exports, module) {
     var CombinedStream = require_combined_stream();
     var util4 = __require("util");
-    var path2 = __require("path");
+    var path = __require("path");
     var http2 = __require("http");
     var https2 = __require("https");
     var parseUrl = __require("url").parse;
@@ -46873,11 +46873,11 @@ var require_form_data = __commonJS({
     FormData3.prototype._getContentDisposition = function(value, options) {
       var filename, contentDisposition;
       if (typeof options.filepath === "string") {
-        filename = path2.normalize(options.filepath).replace(/\\/g, "/");
+        filename = path.normalize(options.filepath).replace(/\\/g, "/");
       } else if (options.filename || value.name || value.path) {
-        filename = path2.basename(options.filename || value.name || value.path);
+        filename = path.basename(options.filename || value.name || value.path);
       } else if (value.readable && value.hasOwnProperty("httpVersion")) {
-        filename = path2.basename(value.client._httpMessage.path || "");
+        filename = path.basename(value.client._httpMessage.path || "");
       }
       if (filename) {
         contentDisposition = 'filename="' + filename + '"';
@@ -47793,6 +47793,11 @@ var import_querystring_es3 = __toESM(require_querystring_es3());
 import crypto2 from "crypto";
 import url from "url";
 var IDigitalHelp = class {
+  static applyVerboseMode(data, options) {
+    if (options.verbose) {
+      console.error(data);
+    }
+  }
   static getParameterizedUrl(url3, params) {
     const $url = new URL(url3);
     const $params = new URLSearchParams(params);
@@ -47820,23 +47825,25 @@ var IDigitalHelp = class {
       }
     }
   }
-  static getRandomBytes(bytes = 32) {
+  static getRandomBytes(bytes = 32, options) {
     try {
       const randomBytes = crypto2.randomBytes(bytes);
       return this.getBase64Encoded(randomBytes);
-    } catch (error) {
+    } catch (e) {
+      IDigitalHelp.applyVerboseMode(e, options);
       const message2 = MESSAGES.COULD_NOT_GENERATE_BYTES;
       throw new IDigitalException(500, message2);
     }
   }
-  static getPkceKeysPair() {
+  static getPkceKeysPair(options) {
     try {
       const data = (0, import_pkce_challenge.default)();
       return {
         codeVerifier: data.code_verifier,
         codeChallenge: data.code_challenge
       };
-    } catch (error) {
+    } catch (e) {
+      IDigitalHelp.applyVerboseMode(e, options);
       const message2 = MESSAGES.COULD_NOT_GENERATE_PKCE;
       throw new IDigitalException(500, message2);
     }
@@ -49894,10 +49901,10 @@ function isVisitable(thing) {
 function removeBrackets(key) {
   return utils_default.endsWith(key, "[]") ? key.slice(0, -2) : key;
 }
-function renderKey(path2, key, dots) {
-  if (!path2)
+function renderKey(path, key, dots) {
+  if (!path)
     return key;
-  return path2.concat(key).map(function each(token, i) {
+  return path.concat(key).map(function each(token, i) {
     token = removeBrackets(token);
     return !dots && i ? "[" + token + "]" : token;
   }).join(dots ? "." : "");
@@ -49943,9 +49950,9 @@ function toFormData(obj, formData, options) {
     }
     return value;
   }
-  function defaultVisitor(value, key, path2) {
+  function defaultVisitor(value, key, path) {
     let arr = value;
-    if (value && !path2 && typeof value === "object") {
+    if (value && !path && typeof value === "object") {
       if (utils_default.endsWith(key, "{}")) {
         key = metaTokens ? key : key.slice(0, -2);
         value = JSON.stringify(value);
@@ -49964,7 +49971,7 @@ function toFormData(obj, formData, options) {
     if (isVisitable(value)) {
       return true;
     }
-    formData.append(renderKey(path2, key, dots), convertValue(value));
+    formData.append(renderKey(path, key, dots), convertValue(value));
     return false;
   }
   const stack = [];
@@ -49973,11 +49980,11 @@ function toFormData(obj, formData, options) {
     convertValue,
     isVisitable
   });
-  function build(value, path2) {
+  function build(value, path) {
     if (utils_default.isUndefined(value))
       return;
     if (stack.indexOf(value) !== -1) {
-      throw Error("Circular reference detected in " + path2.join("."));
+      throw Error("Circular reference detected in " + path.join("."));
     }
     stack.push(value);
     utils_default.forEach(value, function each(el, key) {
@@ -49985,11 +49992,11 @@ function toFormData(obj, formData, options) {
         formData,
         el,
         utils_default.isString(key) ? key.trim() : key,
-        path2,
+        path,
         exposedHelpers
       );
       if (result === true) {
-        build(el, path2 ? path2.concat(key) : [key]);
+        build(el, path ? path.concat(key) : [key]);
       }
     });
     stack.pop();
@@ -50150,7 +50157,7 @@ var node_default = {
 // node_modules/axios/lib/helpers/toURLEncodedForm.js
 function toURLEncodedForm(data, options) {
   return toFormData_default(data, new node_default.classes.URLSearchParams(), Object.assign({
-    visitor: function(value, key, path2, helpers) {
+    visitor: function(value, key, path, helpers) {
       if (node_default.isNode && utils_default.isBuffer(value)) {
         this.append(key, value.toString("base64"));
         return false;
@@ -50179,10 +50186,10 @@ function arrayToObject(arr) {
   return obj;
 }
 function formDataToJSON(formData) {
-  function buildPath(path2, value, target, index) {
-    let name = path2[index++];
+  function buildPath(path, value, target, index) {
+    let name = path[index++];
     const isNumericKey = Number.isFinite(+name);
-    const isLast = index >= path2.length;
+    const isLast = index >= path.length;
     name = !name && utils_default.isArray(target) ? target.length : name;
     if (isLast) {
       if (utils_default.hasOwnProp(target, name)) {
@@ -50195,7 +50202,7 @@ function formDataToJSON(formData) {
     if (!target[name] || !utils_default.isObject(target[name])) {
       target[name] = [];
     }
-    const result = buildPath(path2, value, target[name], index);
+    const result = buildPath(path, value, target[name], index);
     if (result && utils_default.isArray(target[name])) {
       target[name] = arrayToObject(target[name]);
     }
@@ -51271,9 +51278,9 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config) {
       auth = urlUsername + ":" + urlPassword;
     }
     auth && headers.delete("authorization");
-    let path2;
+    let path;
     try {
-      path2 = buildURL(
+      path = buildURL(
         parsed.pathname + parsed.search,
         config.params,
         config.paramsSerializer
@@ -51291,7 +51298,7 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config) {
       false
     );
     const options = {
-      path: path2,
+      path,
       method,
       headers: headers.toJSON(),
       agents: { http: config.httpAgent, https: config.httpsAgent },
@@ -51512,14 +51519,14 @@ var cookies_default = node_default.isStandardBrowserEnv ? (
   // Standard browser envs support document.cookie
   function standardBrowserEnv() {
     return {
-      write: function write(name, value, expires, path2, domain, secure) {
+      write: function write(name, value, expires, path, domain, secure) {
         const cookie = [];
         cookie.push(name + "=" + encodeURIComponent(value));
         if (utils_default.isNumber(expires)) {
           cookie.push("expires=" + new Date(expires).toGMTString());
         }
-        if (utils_default.isString(path2)) {
-          cookie.push("path=" + path2);
+        if (utils_default.isString(path)) {
+          cookie.push("path=" + path);
         }
         if (utils_default.isString(domain)) {
           cookie.push("domain=" + domain);
@@ -52347,27 +52354,27 @@ var {
 // dist/lib/browser/classes/idigital.http.js
 var axiosInstance = axios_default.create();
 var IDigitalHttp = class {
-  static getDiscovery(url3) {
-    return this.get(url3);
+  static getJwks(url3, options) {
+    return this.get(url3, options);
   }
-  static getJwks(url3) {
-    return this.get(url3);
+  static getDiscovery(url3, options) {
+    return this.get(url3, options);
   }
-  static async getTokens(url3, data) {
-    return this.post(url3, data);
+  static async getTokens(url3, data, options) {
+    return this.post(url3, data, options);
   }
-  static get(url3) {
+  static get(url3, options) {
     const headers = { "Content-Type": this.JSON_TYPE };
-    return axiosInstance.get(url3, { headers }).then((response) => response.data).catch(() => {
-      const message2 = MESSAGES.HTTP_ERROR;
-      throw new IDigitalException(500, message2);
+    return axiosInstance.get(url3, { headers }).then((response) => response.data).catch((e) => {
+      IDigitalHelp.applyVerboseMode(e, options);
+      throw new IDigitalException(500, MESSAGES.HTTP_ERROR);
     });
   }
-  static post(url3, data) {
+  static post(url3, data, options) {
     const headers = { "Content-Type": this.WWW_FORM_TYPE };
-    return axiosInstance.post(url3, data, { headers }).then((response) => response.data).catch(() => {
-      const message2 = MESSAGES.HTTP_ERROR;
-      throw new IDigitalException(500, message2);
+    return axiosInstance.post(url3, data, { headers }).then((response) => response.data).catch((e) => {
+      IDigitalHelp.applyVerboseMode(e, options);
+      throw new IDigitalException(500, MESSAGES.HTTP_ERROR);
     });
   }
 };
@@ -52386,11 +52393,205 @@ Object.defineProperty(IDigitalHttp, "JSON_TYPE", {
 
 // dist/lib/browser/consts/discovery.js
 var DISCOVERY = {
-  PATHNAME: "sso/oidc/.well-known/openid-configuration"
+  PATHNAME: "/sso/oidc/.well-known/openid-configuration"
 };
 
+// node_modules/normalize-url/index.js
+var DATA_URL_DEFAULT_MIME_TYPE = "text/plain";
+var DATA_URL_DEFAULT_CHARSET = "us-ascii";
+var testParameter = (name, filters) => filters.some((filter2) => filter2 instanceof RegExp ? filter2.test(name) : filter2 === name);
+var supportedProtocols2 = /* @__PURE__ */ new Set([
+  "https:",
+  "http:",
+  "file:"
+]);
+var hasCustomProtocol = (urlString) => {
+  try {
+    const { protocol } = new URL(urlString);
+    return protocol.endsWith(":") && !supportedProtocols2.has(protocol);
+  } catch (e) {
+    return false;
+  }
+};
+var normalizeDataURL = (urlString, { stripHash }) => {
+  var _a, _b;
+  const match = /^data:(?<type>[^,]*?),(?<data>[^#]*?)(?:#(?<hash>.*))?$/.exec(urlString);
+  if (!match) {
+    throw new Error(`Invalid URL: ${urlString}`);
+  }
+  let { type, data, hash } = match.groups;
+  const mediaType = type.split(";");
+  hash = stripHash ? "" : hash;
+  let isBase64 = false;
+  if (mediaType[mediaType.length - 1] === "base64") {
+    mediaType.pop();
+    isBase64 = true;
+  }
+  const mimeType = (_b = (_a = mediaType.shift()) == null ? void 0 : _a.toLowerCase()) != null ? _b : "";
+  const attributes = mediaType.map((attribute) => {
+    let [key, value = ""] = attribute.split("=").map((string) => string.trim());
+    if (key === "charset") {
+      value = value.toLowerCase();
+      if (value === DATA_URL_DEFAULT_CHARSET) {
+        return "";
+      }
+    }
+    return `${key}${value ? `=${value}` : ""}`;
+  }).filter(Boolean);
+  const normalizedMediaType = [
+    ...attributes
+  ];
+  if (isBase64) {
+    normalizedMediaType.push("base64");
+  }
+  if (normalizedMediaType.length > 0 || mimeType && mimeType !== DATA_URL_DEFAULT_MIME_TYPE) {
+    normalizedMediaType.unshift(mimeType);
+  }
+  return `data:${normalizedMediaType.join(";")},${isBase64 ? data.trim() : data}${hash ? `#${hash}` : ""}`;
+};
+function normalizeUrl(urlString, options) {
+  options = {
+    defaultProtocol: "http",
+    normalizeProtocol: true,
+    forceHttp: false,
+    forceHttps: false,
+    stripAuthentication: true,
+    stripHash: false,
+    stripTextFragment: true,
+    stripWWW: true,
+    removeQueryParameters: [/^utm_\w+/i],
+    removeTrailingSlash: true,
+    removeSingleSlash: true,
+    removeDirectoryIndex: false,
+    removeExplicitPort: false,
+    sortQueryParameters: true,
+    ...options
+  };
+  if (typeof options.defaultProtocol === "string" && !options.defaultProtocol.endsWith(":")) {
+    options.defaultProtocol = `${options.defaultProtocol}:`;
+  }
+  urlString = urlString.trim();
+  if (/^data:/i.test(urlString)) {
+    return normalizeDataURL(urlString, options);
+  }
+  if (hasCustomProtocol(urlString)) {
+    return urlString;
+  }
+  const hasRelativeProtocol = urlString.startsWith("//");
+  const isRelativeUrl = !hasRelativeProtocol && /^\.*\//.test(urlString);
+  if (!isRelativeUrl) {
+    urlString = urlString.replace(/^(?!(?:\w+:)?\/\/)|^\/\//, options.defaultProtocol);
+  }
+  const urlObject = new URL(urlString);
+  if (options.forceHttp && options.forceHttps) {
+    throw new Error("The `forceHttp` and `forceHttps` options cannot be used together");
+  }
+  if (options.forceHttp && urlObject.protocol === "https:") {
+    urlObject.protocol = "http:";
+  }
+  if (options.forceHttps && urlObject.protocol === "http:") {
+    urlObject.protocol = "https:";
+  }
+  if (options.stripAuthentication) {
+    urlObject.username = "";
+    urlObject.password = "";
+  }
+  if (options.stripHash) {
+    urlObject.hash = "";
+  } else if (options.stripTextFragment) {
+    urlObject.hash = urlObject.hash.replace(/#?:~:text.*?$/i, "");
+  }
+  if (urlObject.pathname) {
+    const protocolRegex = /\b[a-z][a-z\d+\-.]{1,50}:\/\//g;
+    let lastIndex = 0;
+    let result = "";
+    for (; ; ) {
+      const match = protocolRegex.exec(urlObject.pathname);
+      if (!match) {
+        break;
+      }
+      const protocol = match[0];
+      const protocolAtIndex = match.index;
+      const intermediate = urlObject.pathname.slice(lastIndex, protocolAtIndex);
+      result += intermediate.replace(/\/{2,}/g, "/");
+      result += protocol;
+      lastIndex = protocolAtIndex + protocol.length;
+    }
+    const remnant = urlObject.pathname.slice(lastIndex, urlObject.pathname.length);
+    result += remnant.replace(/\/{2,}/g, "/");
+    urlObject.pathname = result;
+  }
+  if (urlObject.pathname) {
+    try {
+      urlObject.pathname = decodeURI(urlObject.pathname);
+    } catch (e) {
+    }
+  }
+  if (options.removeDirectoryIndex === true) {
+    options.removeDirectoryIndex = [/^index\.[a-z]+$/];
+  }
+  if (Array.isArray(options.removeDirectoryIndex) && options.removeDirectoryIndex.length > 0) {
+    let pathComponents = urlObject.pathname.split("/");
+    const lastComponent = pathComponents[pathComponents.length - 1];
+    if (testParameter(lastComponent, options.removeDirectoryIndex)) {
+      pathComponents = pathComponents.slice(0, -1);
+      urlObject.pathname = pathComponents.slice(1).join("/") + "/";
+    }
+  }
+  if (urlObject.hostname) {
+    urlObject.hostname = urlObject.hostname.replace(/\.$/, "");
+    if (options.stripWWW && /^www\.(?!www\.)[a-z\-\d]{1,63}\.[a-z.\-\d]{2,63}$/.test(urlObject.hostname)) {
+      urlObject.hostname = urlObject.hostname.replace(/^www\./, "");
+    }
+  }
+  if (Array.isArray(options.removeQueryParameters)) {
+    for (const key of [...urlObject.searchParams.keys()]) {
+      if (testParameter(key, options.removeQueryParameters)) {
+        urlObject.searchParams.delete(key);
+      }
+    }
+  }
+  if (!Array.isArray(options.keepQueryParameters) && options.removeQueryParameters === true) {
+    urlObject.search = "";
+  }
+  if (Array.isArray(options.keepQueryParameters) && options.keepQueryParameters.length > 0) {
+    for (const key of [...urlObject.searchParams.keys()]) {
+      if (!testParameter(key, options.keepQueryParameters)) {
+        urlObject.searchParams.delete(key);
+      }
+    }
+  }
+  if (options.sortQueryParameters) {
+    urlObject.searchParams.sort();
+    try {
+      urlObject.search = decodeURIComponent(urlObject.search);
+    } catch (e) {
+    }
+  }
+  if (options.removeTrailingSlash) {
+    urlObject.pathname = urlObject.pathname.replace(/\/$/, "");
+  }
+  if (options.removeExplicitPort && urlObject.port) {
+    urlObject.port = "";
+  }
+  const oldUrlString = urlString;
+  urlString = urlObject.toString();
+  if (!options.removeSingleSlash && urlObject.pathname === "/" && !oldUrlString.endsWith("/") && urlObject.hash === "") {
+    urlString = urlString.replace(/\/$/, "");
+  }
+  if ((options.removeTrailingSlash || urlObject.pathname === "/") && urlObject.hash === "" && options.removeSingleSlash) {
+    urlString = urlString.replace(/\/$/, "");
+  }
+  if (hasRelativeProtocol && !options.normalizeProtocol) {
+    urlString = urlString.replace(/^http:\/\//, "//");
+  }
+  if (options.stripProtocol) {
+    urlString = urlString.replace(/^(?:https?:)?\/\//, "");
+  }
+  return urlString;
+}
+
 // dist/lib/browser/classes/idigital.js
-import path from "path";
 var IDigital = class {
   constructor(options) {
     Object.defineProperty(this, "options", {
@@ -52431,9 +52632,9 @@ var IDigital = class {
   async authorize(session, location) {
     const discovery = await this.getDiscovery();
     const authorizationEndpoint = discovery.authorization_endpoint;
-    const pkceKeysPair = IDigitalHelp.getPkceKeysPair();
-    const nonce = IDigitalHelp.getRandomBytes();
-    const state = IDigitalHelp.getRandomBytes();
+    const pkceKeysPair = IDigitalHelp.getPkceKeysPair(this.options);
+    const nonce = IDigitalHelp.getRandomBytes(32, this.options);
+    const state = IDigitalHelp.getRandomBytes(32, this.options);
     session.set("codeChallenge", pkceKeysPair.codeChallenge);
     session.set("codeVerifier", pkceKeysPair.codeVerifier);
     session.set("enable", true);
@@ -52507,6 +52708,7 @@ var IDigital = class {
         idToken
       };
     } catch (e) {
+      IDigitalHelp.applyVerboseMode(e, this.options);
       return {
         accessToken: null,
         idToken: null,
@@ -52545,7 +52747,7 @@ var IDigital = class {
       client_id: this.options.clientId,
       nonce: session.get("nonce"),
       code
-    });
+    }, this.options);
   }
   async prepare() {
     await this.getDiscovery();
@@ -52566,7 +52768,7 @@ var IDigital = class {
       }
     }
     const discovery = await this.getDiscovery();
-    const jwks = await IDigitalHttp.getJwks(discovery.jwks_uri);
+    const jwks = await IDigitalHttp.getJwks(discovery.jwks_uri, this.options);
     if (this.options.cache) {
       this.options.cache.set("jwks", jwks);
     }
@@ -52589,8 +52791,8 @@ var IDigital = class {
     }
     const issuer = this.options.issuer;
     const pathname = DISCOVERY.PATHNAME;
-    const url3 = path.join(issuer, pathname);
-    const discovery = await IDigitalHttp.getDiscovery(url3);
+    const url3 = normalizeUrl(issuer + pathname);
+    const discovery = await IDigitalHttp.getDiscovery(url3, this.options);
     if (this.options.cache) {
       this.options.cache.set("discovery", discovery);
     }

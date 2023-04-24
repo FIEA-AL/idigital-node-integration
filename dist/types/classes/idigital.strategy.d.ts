@@ -1,4 +1,5 @@
 import { StrategyOptions } from "../interfaces/strategy";
+// @ts-ignore
 import { Strategy } from 'passport-strategy';
 import IDigital from "./idigital";
 export default class IDigitalStrategy extends Strategy {

@@ -1,1 +1,1 @@
-{"version":3,"file":"discovery.js","sourceRoot":"","sources":["../../../../src/consts/discovery.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,MAAM,SAAS,GAAG;IACxB,QAAQ,EAAE,2CAA2C;CACrD,CAAC"}
+{"version":3,"file":"discovery.js","sourceRoot":"","sources":["../../../../src/consts/discovery.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,MAAM,SAAS,GAAG;IACxB,QAAQ,EAAE,4CAA4C;CACtD,CAAC"}

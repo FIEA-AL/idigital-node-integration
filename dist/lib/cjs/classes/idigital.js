@@ -9,7 +9,7 @@ const idigital_help_1 = tslib_1.__importDefault(require("./idigital.help.js"));
 const idigital_http_1 = tslib_1.__importDefault(require("./idigital.http.js"));
 const messages_const_1 = require("../errors/messages.const.js");
 const discovery_1 = require("../consts/discovery.js");
-const path_1 = tslib_1.__importDefault(require("path"));
+const normalize_url_1 = tslib_1.__importDefault(require("normalize-url"));
 class IDigital {
     constructor(options) {
         Object.defineProperty(this, "options", {
@@ -50,9 +50,9 @@ class IDigital {
     async authorize(session, location) {
         const discovery = await this.getDiscovery();
         const authorizationEndpoint = discovery.authorization_endpoint;
-        const pkceKeysPair = idigital_help_1.default.getPkceKeysPair();
-        const nonce = idigital_help_1.default.getRandomBytes();
-        const state = idigital_help_1.default.getRandomBytes();
+        const pkceKeysPair = idigital_help_1.default.getPkceKeysPair(this.options);
+        const nonce = idigital_help_1.default.getRandomBytes(32, this.options);
+        const state = idigital_help_1.default.getRandomBytes(32, this.options);
         session.set('codeChallenge', pkceKeysPair.codeChallenge);
         session.set('codeVerifier', pkceKeysPair.codeVerifier);
         session.set('enable', true);
@@ -128,6 +128,7 @@ class IDigital {
             };
         }
         catch (e) {
+            idigital_help_1.default.applyVerboseMode(e, this.options);
             return {
                 accessToken: null,
                 idToken: null,
@@ -166,7 +167,7 @@ class IDigital {
             client_id: this.options.clientId,
             nonce: session.get('nonce'),
             code: code
-        });
+        }, this.options);
     }
     async prepare() {
         await this.getDiscovery();
@@ -187,7 +188,7 @@ class IDigital {
             }
         }
         const discovery = await this.getDiscovery();
-        const jwks = await idigital_http_1.default.getJwks(discovery.jwks_uri);
+        const jwks = await idigital_http_1.default.getJwks(discovery.jwks_uri, this.options);
         if (this.options.cache) {
             this.options.cache.set('jwks', jwks);
         }
@@ -210,8 +211,8 @@ class IDigital {
         }
         const issuer = this.options.issuer;
         const pathname = discovery_1.DISCOVERY.PATHNAME;
-        const url = path_1.default.join(issuer, pathname);
-        const discovery = await idigital_http_1.default.getDiscovery(url);
+        const url = (0, normalize_url_1.default)(issuer + pathname);
+        const discovery = await idigital_http_1.default.getDiscovery(url, this.options);
         if (this.options.cache) {
             this.options.cache.set('discovery', discovery);
         }

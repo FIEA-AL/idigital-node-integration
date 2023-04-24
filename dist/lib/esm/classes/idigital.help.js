@@ -5,6 +5,11 @@ import querystring from "querystring-es3";
 import crypto from 'crypto';
 import url from "url";
 export default class IDigitalHelp {
+    static applyVerboseMode(data, options) {
+        if (options.verbose) {
+            console.error(data);
+        }
+    }
     static getParameterizedUrl(url, params) {
         const $url = new URL(url);
         const $params = new URLSearchParams(params);
@@ -35,17 +40,18 @@ export default class IDigitalHelp {
             }
         }
     }
-    static getRandomBytes(bytes = 32) {
+    static getRandomBytes(bytes = 32, options) {
         try {
             const randomBytes = crypto.randomBytes(bytes);
             return this.getBase64Encoded(randomBytes);
         }
-        catch (error) {
+        catch (e) {
+            IDigitalHelp.applyVerboseMode(e, options);
             const message = MESSAGES.COULD_NOT_GENERATE_BYTES;
             throw new IDigitalException(500, message);
         }
     }
-    static getPkceKeysPair() {
+    static getPkceKeysPair(options) {
         try {
             const data = pkceChallenge();
             return {
@@ -53,7 +59,8 @@ export default class IDigitalHelp {
                 codeChallenge: data.code_challenge
             };
         }
-        catch (error) {
+        catch (e) {
+            IDigitalHelp.applyVerboseMode(e, options);
             const message = MESSAGES.COULD_NOT_GENERATE_PKCE;
             throw new IDigitalException(500, message);
         }

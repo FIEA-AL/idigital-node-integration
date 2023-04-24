@@ -9,6 +9,7 @@ export interface IDigitalOptions {
     cache?: Session;
     clientId: string;
     scopes?: string[];
+    verbose?: boolean;
     grantType?: string;
     redirectUri: string;
     discovery?: Discovery;

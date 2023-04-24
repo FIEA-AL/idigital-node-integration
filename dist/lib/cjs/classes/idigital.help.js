@@ -8,6 +8,11 @@ const querystring_es3_1 = tslib_1.__importDefault(require("querystring-es3"));
 const crypto_1 = tslib_1.__importDefault(require("crypto"));
 const url_1 = tslib_1.__importDefault(require("url"));
 class IDigitalHelp {
+    static applyVerboseMode(data, options) {
+        if (options.verbose) {
+            console.error(data);
+        }
+    }
     static getParameterizedUrl(url, params) {
         const $url = new URL(url);
         const $params = new URLSearchParams(params);
@@ -38,17 +43,18 @@ class IDigitalHelp {
             }
         }
     }
-    static getRandomBytes(bytes = 32) {
+    static getRandomBytes(bytes = 32, options) {
         try {
             const randomBytes = crypto_1.default.randomBytes(bytes);
             return this.getBase64Encoded(randomBytes);
         }
-        catch (error) {
+        catch (e) {
+            IDigitalHelp.applyVerboseMode(e, options);
             const message = messages_const_1.MESSAGES.COULD_NOT_GENERATE_BYTES;
             throw new idigital_exception_1.default(500, message);
         }
     }
-    static getPkceKeysPair() {
+    static getPkceKeysPair(options) {
         try {
             const data = (0, pkce_challenge_1.default)();
             return {
@@ -56,7 +62,8 @@ class IDigitalHelp {
                 codeChallenge: data.code_challenge
             };
         }
-        catch (error) {
+        catch (e) {
+            IDigitalHelp.applyVerboseMode(e, options);
             const message = messages_const_1.MESSAGES.COULD_NOT_GENERATE_PKCE;
             throw new idigital_exception_1.default(500, message);
         }
