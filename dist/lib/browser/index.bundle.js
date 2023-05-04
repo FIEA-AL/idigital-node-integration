@@ -49424,6 +49424,68 @@ var EnvironmentType;
   EnvironmentType2["PRODUCTION"] = "https://sso.idigital.sistemafiea.com.br";
 })(EnvironmentType || (EnvironmentType = {}));
 
+// dist/lib/browser/classes/idigital.session.js
+var IDigitalSession = class {
+  constructor(options) {
+    Object.defineProperty(this, "storage", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "options", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "storageName", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    this.storageName = options.name || DEFAULT_SESSION_STORAGE_NAME;
+    this.storage = options.storage;
+    this.options = options;
+    this.start();
+  }
+  static create(storage, storageName) {
+    return new IDigitalSession({
+      name: storageName,
+      storage
+    });
+  }
+  start() {
+    if (!this.storage) {
+      const message2 = MESSAGES.REQUIRED_SESSION;
+      throw new IDigitalException(500, message2);
+    }
+    if (!this.storage[this.storageName]) {
+      this.storage[this.storageName] = {};
+    }
+  }
+  destroy() {
+    delete this.storage[this.storageName];
+  }
+  get(key) {
+    let object = this.storage[this.storageName];
+    return object[key] ? object[key] : null;
+  }
+  set(key, value) {
+    this.storage[this.storageName][key] = value;
+    return this;
+  }
+  getAllKeys() {
+    return this.storage[this.storageName];
+  }
+  setManyKeys(keys) {
+    for (const key in keys)
+      this.set(key, keys[key]);
+    return this;
+  }
+};
+
 // dist/lib/browser/classes/idigital.strategy.js
 var import_passport_strategy = __toESM(require_lib2());
 
@@ -52396,201 +52458,6 @@ var DISCOVERY = {
   PATHNAME: "/sso/oidc/.well-known/openid-configuration"
 };
 
-// node_modules/normalize-url/index.js
-var DATA_URL_DEFAULT_MIME_TYPE = "text/plain";
-var DATA_URL_DEFAULT_CHARSET = "us-ascii";
-var testParameter = (name, filters) => filters.some((filter2) => filter2 instanceof RegExp ? filter2.test(name) : filter2 === name);
-var supportedProtocols2 = /* @__PURE__ */ new Set([
-  "https:",
-  "http:",
-  "file:"
-]);
-var hasCustomProtocol = (urlString) => {
-  try {
-    const { protocol } = new URL(urlString);
-    return protocol.endsWith(":") && !supportedProtocols2.has(protocol);
-  } catch (e) {
-    return false;
-  }
-};
-var normalizeDataURL = (urlString, { stripHash }) => {
-  var _a, _b;
-  const match = /^data:(?<type>[^,]*?),(?<data>[^#]*?)(?:#(?<hash>.*))?$/.exec(urlString);
-  if (!match) {
-    throw new Error(`Invalid URL: ${urlString}`);
-  }
-  let { type, data, hash } = match.groups;
-  const mediaType = type.split(";");
-  hash = stripHash ? "" : hash;
-  let isBase64 = false;
-  if (mediaType[mediaType.length - 1] === "base64") {
-    mediaType.pop();
-    isBase64 = true;
-  }
-  const mimeType = (_b = (_a = mediaType.shift()) == null ? void 0 : _a.toLowerCase()) != null ? _b : "";
-  const attributes = mediaType.map((attribute) => {
-    let [key, value = ""] = attribute.split("=").map((string) => string.trim());
-    if (key === "charset") {
-      value = value.toLowerCase();
-      if (value === DATA_URL_DEFAULT_CHARSET) {
-        return "";
-      }
-    }
-    return `${key}${value ? `=${value}` : ""}`;
-  }).filter(Boolean);
-  const normalizedMediaType = [
-    ...attributes
-  ];
-  if (isBase64) {
-    normalizedMediaType.push("base64");
-  }
-  if (normalizedMediaType.length > 0 || mimeType && mimeType !== DATA_URL_DEFAULT_MIME_TYPE) {
-    normalizedMediaType.unshift(mimeType);
-  }
-  return `data:${normalizedMediaType.join(";")},${isBase64 ? data.trim() : data}${hash ? `#${hash}` : ""}`;
-};
-function normalizeUrl(urlString, options) {
-  options = {
-    defaultProtocol: "http",
-    normalizeProtocol: true,
-    forceHttp: false,
-    forceHttps: false,
-    stripAuthentication: true,
-    stripHash: false,
-    stripTextFragment: true,
-    stripWWW: true,
-    removeQueryParameters: [/^utm_\w+/i],
-    removeTrailingSlash: true,
-    removeSingleSlash: true,
-    removeDirectoryIndex: false,
-    removeExplicitPort: false,
-    sortQueryParameters: true,
-    ...options
-  };
-  if (typeof options.defaultProtocol === "string" && !options.defaultProtocol.endsWith(":")) {
-    options.defaultProtocol = `${options.defaultProtocol}:`;
-  }
-  urlString = urlString.trim();
-  if (/^data:/i.test(urlString)) {
-    return normalizeDataURL(urlString, options);
-  }
-  if (hasCustomProtocol(urlString)) {
-    return urlString;
-  }
-  const hasRelativeProtocol = urlString.startsWith("//");
-  const isRelativeUrl = !hasRelativeProtocol && /^\.*\//.test(urlString);
-  if (!isRelativeUrl) {
-    urlString = urlString.replace(/^(?!(?:\w+:)?\/\/)|^\/\//, options.defaultProtocol);
-  }
-  const urlObject = new URL(urlString);
-  if (options.forceHttp && options.forceHttps) {
-    throw new Error("The `forceHttp` and `forceHttps` options cannot be used together");
-  }
-  if (options.forceHttp && urlObject.protocol === "https:") {
-    urlObject.protocol = "http:";
-  }
-  if (options.forceHttps && urlObject.protocol === "http:") {
-    urlObject.protocol = "https:";
-  }
-  if (options.stripAuthentication) {
-    urlObject.username = "";
-    urlObject.password = "";
-  }
-  if (options.stripHash) {
-    urlObject.hash = "";
-  } else if (options.stripTextFragment) {
-    urlObject.hash = urlObject.hash.replace(/#?:~:text.*?$/i, "");
-  }
-  if (urlObject.pathname) {
-    const protocolRegex = /\b[a-z][a-z\d+\-.]{1,50}:\/\//g;
-    let lastIndex = 0;
-    let result = "";
-    for (; ; ) {
-      const match = protocolRegex.exec(urlObject.pathname);
-      if (!match) {
-        break;
-      }
-      const protocol = match[0];
-      const protocolAtIndex = match.index;
-      const intermediate = urlObject.pathname.slice(lastIndex, protocolAtIndex);
-      result += intermediate.replace(/\/{2,}/g, "/");
-      result += protocol;
-      lastIndex = protocolAtIndex + protocol.length;
-    }
-    const remnant = urlObject.pathname.slice(lastIndex, urlObject.pathname.length);
-    result += remnant.replace(/\/{2,}/g, "/");
-    urlObject.pathname = result;
-  }
-  if (urlObject.pathname) {
-    try {
-      urlObject.pathname = decodeURI(urlObject.pathname);
-    } catch (e) {
-    }
-  }
-  if (options.removeDirectoryIndex === true) {
-    options.removeDirectoryIndex = [/^index\.[a-z]+$/];
-  }
-  if (Array.isArray(options.removeDirectoryIndex) && options.removeDirectoryIndex.length > 0) {
-    let pathComponents = urlObject.pathname.split("/");
-    const lastComponent = pathComponents[pathComponents.length - 1];
-    if (testParameter(lastComponent, options.removeDirectoryIndex)) {
-      pathComponents = pathComponents.slice(0, -1);
-      urlObject.pathname = pathComponents.slice(1).join("/") + "/";
-    }
-  }
-  if (urlObject.hostname) {
-    urlObject.hostname = urlObject.hostname.replace(/\.$/, "");
-    if (options.stripWWW && /^www\.(?!www\.)[a-z\-\d]{1,63}\.[a-z.\-\d]{2,63}$/.test(urlObject.hostname)) {
-      urlObject.hostname = urlObject.hostname.replace(/^www\./, "");
-    }
-  }
-  if (Array.isArray(options.removeQueryParameters)) {
-    for (const key of [...urlObject.searchParams.keys()]) {
-      if (testParameter(key, options.removeQueryParameters)) {
-        urlObject.searchParams.delete(key);
-      }
-    }
-  }
-  if (!Array.isArray(options.keepQueryParameters) && options.removeQueryParameters === true) {
-    urlObject.search = "";
-  }
-  if (Array.isArray(options.keepQueryParameters) && options.keepQueryParameters.length > 0) {
-    for (const key of [...urlObject.searchParams.keys()]) {
-      if (!testParameter(key, options.keepQueryParameters)) {
-        urlObject.searchParams.delete(key);
-      }
-    }
-  }
-  if (options.sortQueryParameters) {
-    urlObject.searchParams.sort();
-    try {
-      urlObject.search = decodeURIComponent(urlObject.search);
-    } catch (e) {
-    }
-  }
-  if (options.removeTrailingSlash) {
-    urlObject.pathname = urlObject.pathname.replace(/\/$/, "");
-  }
-  if (options.removeExplicitPort && urlObject.port) {
-    urlObject.port = "";
-  }
-  const oldUrlString = urlString;
-  urlString = urlObject.toString();
-  if (!options.removeSingleSlash && urlObject.pathname === "/" && !oldUrlString.endsWith("/") && urlObject.hash === "") {
-    urlString = urlString.replace(/\/$/, "");
-  }
-  if ((options.removeTrailingSlash || urlObject.pathname === "/") && urlObject.hash === "" && options.removeSingleSlash) {
-    urlString = urlString.replace(/\/$/, "");
-  }
-  if (hasRelativeProtocol && !options.normalizeProtocol) {
-    urlString = urlString.replace(/^http:\/\//, "//");
-  }
-  if (options.stripProtocol) {
-    urlString = urlString.replace(/^(?:https?:)?\/\//, "");
-  }
-  return urlString;
-}
-
 // dist/lib/browser/classes/idigital.js
 var IDigital = class {
   constructor(options) {
@@ -52657,6 +52524,7 @@ var IDigital = class {
     return url3.href;
   }
   async callback(session, options) {
+    var _a, _b;
     if ((options.params || {}).iss !== this.options.issuer) {
       const message2 = MESSAGES.DIVERGENT_ISSUER;
       throw new IDigitalException(400, message2);
@@ -52682,8 +52550,8 @@ var IDigital = class {
     session.set("idToken", tokens.id_token);
     session.set("enable", true);
     return {
-      nonce: options.include.includes("nonce") ? session.get("nonce") : null,
-      state: options.include.includes("state") ? session.get("state") : null,
+      nonce: ((_a = options.include) === null || _a === void 0 ? void 0 : _a.includes("nonce")) ? session.get("nonce") : null,
+      state: ((_b = options.include) === null || _b === void 0 ? void 0 : _b.includes("state")) ? session.get("state") : null,
       accessToken,
       idToken
     };
@@ -52789,9 +52657,7 @@ var IDigital = class {
         return this.discovery;
       }
     }
-    const issuer = this.options.issuer;
-    const pathname = DISCOVERY.PATHNAME;
-    const url3 = normalizeUrl(issuer + pathname);
+    const url3 = (this.options.issuer + DISCOVERY.PATHNAME).replace(/\/\//g, "/");
     const discovery = await IDigitalHttp.getDiscovery(url3, this.options);
     if (this.options.cache) {
       this.options.cache.set("discovery", discovery);
@@ -52846,10 +52712,11 @@ var IDigitalStrategy = class extends import_passport_strategy.Strategy {
   authenticate(request, options) {
     (async () => {
       const params = IDigitalHelp.getRequestParams(request);
+      const session = IDigitalSession.create(request.session);
       if (Object.keys(params).length === 0) {
-        return this._client.authorize(request.session, this);
+        return this._client.authorize(session, this);
       } else {
-        const tokenSet = await this._client.callback(request.session, { params });
+        const tokenSet = await this._client.callback(session, { params });
         const userInfo = tokenSet.idToken.payload;
         const args = [
           tokenSet,
@@ -52875,68 +52742,6 @@ var IDigitalStrategy = class extends import_passport_strategy.Strategy {
     } else {
       self2.success(user, info);
     }
-  }
-};
-
-// dist/lib/browser/classes/idigital.session.js
-var IDigitalSession = class {
-  constructor(options) {
-    Object.defineProperty(this, "storage", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "options", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "storageName", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    this.storageName = options.name || DEFAULT_SESSION_STORAGE_NAME;
-    this.storage = options.storage;
-    this.options = options;
-    this.start();
-  }
-  static create(storage, storageName) {
-    return new IDigitalSession({
-      name: storageName,
-      storage
-    });
-  }
-  start() {
-    if (!this.storage) {
-      const message2 = MESSAGES.REQUIRED_SESSION;
-      throw new IDigitalException(500, message2);
-    }
-    if (!this.storage[this.storageName]) {
-      this.storage[this.storageName] = {};
-    }
-  }
-  destroy() {
-    delete this.storage[this.storageName];
-  }
-  get(key) {
-    let object = this.storage[this.storageName];
-    return object[key] ? object[key] : null;
-  }
-  set(key, value) {
-    this.storage[this.storageName][key] = value;
-    return this;
-  }
-  getAllKeys() {
-    return this.storage[this.storageName];
-  }
-  setManyKeys(keys) {
-    for (const key in keys)
-      this.set(key, keys[key]);
-    return this;
   }
 };
 export {

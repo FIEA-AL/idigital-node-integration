@@ -1,6 +1,7 @@
 import IDigitalException from "../errors/idigital.exception.js";
 import IDigitalHelp from "./idigital.help.js";
 import { MESSAGES } from "../errors/messages.const.js";
+import IDigitalSession from "./idigital.session.js";
 import { Strategy } from 'passport-strategy';
 import IDigital from "./idigital.js";
 export default class IDigitalStrategy extends Strategy {
@@ -48,11 +49,12 @@ export default class IDigitalStrategy extends Strategy {
     authenticate(request, options) {
         (async () => {
             const params = IDigitalHelp.getRequestParams(request);
+            const session = IDigitalSession.create(request.session);
             if (Object.keys(params).length === 0) {
-                return this._client.authorize(request.session, this);
+                return this._client.authorize(session, this);
             }
             else {
-                const tokenSet = await this._client.callback(request.session, { params });
+                const tokenSet = await this._client.callback(session, { params });
                 const userInfo = tokenSet.idToken.payload;
                 const args = [
                     tokenSet,

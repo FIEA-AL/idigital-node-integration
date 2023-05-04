@@ -12,7 +12,6 @@ import { MESSAGES } from "@errors/messages.const";
 import { DISCOVERY } from "@consts/discovery";
 import { Session } from "@interfaces/session";
 import { JWKS } from '@interfaces/jwks';
-import normalizeUrl from 'normalize-url';
 
 export default class IDigital {
 	private readonly options: IDigitalOptions = undefined;
@@ -107,8 +106,8 @@ export default class IDigital {
 		session.set('enable', true);
 
 		return {
-			nonce: options.include.includes('nonce') ? session.get('nonce') : null,
-			state: options.include.includes('state') ? session.get('state') : null,
+			nonce: options.include?.includes('nonce') ? session.get('nonce') : null,
+			state: options.include?.includes('state') ? session.get('state') : null,
 			accessToken,
 			idToken
 		};
@@ -240,9 +239,7 @@ export default class IDigital {
 			}
 		}
 
-		const issuer = this.options.issuer;
-		const pathname = DISCOVERY.PATHNAME;
-		const url = normalizeUrl(issuer + pathname);
+		const url = (this.options.issuer + DISCOVERY.PATHNAME).replace(/\/\//g, '/');
 		const discovery = await IDigitalHttp.getDiscovery(url, this.options);
 
 		if (this.options.cache) {

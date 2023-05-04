@@ -9,7 +9,6 @@ const idigital_help_1 = tslib_1.__importDefault(require("./idigital.help.js"));
 const idigital_http_1 = tslib_1.__importDefault(require("./idigital.http.js"));
 const messages_const_1 = require("../errors/messages.const.js");
 const discovery_1 = require("../consts/discovery.js");
-const normalize_url_1 = tslib_1.__importDefault(require("normalize-url"));
 class IDigital {
     constructor(options) {
         Object.defineProperty(this, "options", {
@@ -75,6 +74,7 @@ class IDigital {
         return url.href;
     }
     async callback(session, options) {
+        var _a, _b;
         if ((options.params || {}).iss !== this.options.issuer) {
             const message = messages_const_1.MESSAGES.DIVERGENT_ISSUER;
             throw new idigital_exception_1.default(400, message);
@@ -101,8 +101,8 @@ class IDigital {
         session.set('idToken', tokens.id_token);
         session.set('enable', true);
         return {
-            nonce: options.include.includes('nonce') ? session.get('nonce') : null,
-            state: options.include.includes('state') ? session.get('state') : null,
+            nonce: ((_a = options.include) === null || _a === void 0 ? void 0 : _a.includes('nonce')) ? session.get('nonce') : null,
+            state: ((_b = options.include) === null || _b === void 0 ? void 0 : _b.includes('state')) ? session.get('state') : null,
             accessToken,
             idToken
         };
@@ -209,9 +209,7 @@ class IDigital {
                 return this.discovery;
             }
         }
-        const issuer = this.options.issuer;
-        const pathname = discovery_1.DISCOVERY.PATHNAME;
-        const url = (0, normalize_url_1.default)(issuer + pathname);
+        const url = (this.options.issuer + discovery_1.DISCOVERY.PATHNAME).replace(/\/\//g, '/');
         const discovery = await idigital_http_1.default.getDiscovery(url, this.options);
         if (this.options.cache) {
             this.options.cache.set('discovery', discovery);

@@ -2,6 +2,7 @@ import IDigitalException from "@errors/idigital.exception";
 import { StrategyOptions } from "@interfaces/strategy";
 import IDigitalHelp from "@classes/idigital.help";
 import { MESSAGES } from "@errors/messages.const";
+import IDigitalSession from "./idigital.session";
 import { IDToken } from '@interfaces/id.token';
 // @ts-ignore
 import { Strategy } from 'passport-strategy';
@@ -36,11 +37,12 @@ export default class IDigitalStrategy extends Strategy {
     public authenticate(request, options) {
         (async () => {
             const params = IDigitalHelp.getRequestParams(request);
+            const session = IDigitalSession.create(request.session);
 
             if (Object.keys(params).length === 0) {
-                return this._client.authorize(request.session, this as any);
+                return this._client.authorize(session, this as any);
             } else {
-                const tokenSet = await this._client.callback(request.session, { params });
+                const tokenSet = await this._client.callback(session, { params });
                 const userInfo = (tokenSet.idToken as IDToken).payload;
 
                 const args = [

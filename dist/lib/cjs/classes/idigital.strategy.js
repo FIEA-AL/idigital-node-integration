@@ -4,6 +4,7 @@ const tslib_1 = require("tslib");
 const idigital_exception_1 = tslib_1.__importDefault(require("../errors/idigital.exception.js"));
 const idigital_help_1 = tslib_1.__importDefault(require("./idigital.help.js"));
 const messages_const_1 = require("../errors/messages.const.js");
+const idigital_session_1 = tslib_1.__importDefault(require("./idigital.session.js"));
 const passport_strategy_1 = require("passport-strategy");
 const idigital_1 = tslib_1.__importDefault(require("./idigital.js"));
 class IDigitalStrategy extends passport_strategy_1.Strategy {
@@ -51,11 +52,12 @@ class IDigitalStrategy extends passport_strategy_1.Strategy {
     authenticate(request, options) {
         (async () => {
             const params = idigital_help_1.default.getRequestParams(request);
+            const session = idigital_session_1.default.create(request.session);
             if (Object.keys(params).length === 0) {
-                return this._client.authorize(request.session, this);
+                return this._client.authorize(session, this);
             }
             else {
-                const tokenSet = await this._client.callback(request.session, { params });
+                const tokenSet = await this._client.callback(session, { params });
                 const userInfo = tokenSet.idToken.payload;
                 const args = [
                     tokenSet,
