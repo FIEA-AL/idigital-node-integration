@@ -49422,6 +49422,7 @@ var EnvironmentType;
   EnvironmentType2["HOMOLOGATION"] = "https://sso-homo.idigital.sistemafiea.com.br";
   EnvironmentType2["DEVELOPMENT"] = "https://sso-dev.idigital.sistemafiea.com.br";
   EnvironmentType2["PRODUCTION"] = "https://sso.idigital.sistemafiea.com.br";
+  EnvironmentType2["LOCAL"] = "http://localhost:3333";
 })(EnvironmentType || (EnvironmentType = {}));
 
 // dist/lib/browser/classes/idigital.session.js
@@ -52657,7 +52658,7 @@ var IDigital = class {
         return this.discovery;
       }
     }
-    const url3 = (this.options.issuer + DISCOVERY.PATHNAME).replace(/\/\//g, "/");
+    const url3 = this.options.issuer + DISCOVERY.PATHNAME;
     const discovery = await IDigitalHttp.getDiscovery(url3, this.options);
     if (this.options.cache) {
       this.options.cache.set("discovery", discovery);

@@ -239,7 +239,7 @@ export default class IDigital {
 			}
 		}
 
-		const url = (this.options.issuer + DISCOVERY.PATHNAME).replace(/\/\//g, '/');
+		const url = this.options.issuer + DISCOVERY.PATHNAME;
 		const discovery = await IDigitalHttp.getDiscovery(url, this.options);
 
 		if (this.options.cache) {

@@ -209,7 +209,7 @@ class IDigital {
                 return this.discovery;
             }
         }
-        const url = (this.options.issuer + discovery_1.DISCOVERY.PATHNAME).replace(/\/\//g, '/');
+        const url = this.options.issuer + discovery_1.DISCOVERY.PATHNAME;
         const discovery = await idigital_http_1.default.getDiscovery(url, this.options);
         if (this.options.cache) {
             this.options.cache.set('discovery', discovery);
