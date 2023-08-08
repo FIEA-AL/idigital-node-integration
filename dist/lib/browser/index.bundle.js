@@ -47788,8 +47788,8 @@ var IsAuthenticatedType;
 })(IsAuthenticatedType || (IsAuthenticatedType = {}));
 
 // dist/lib/browser/classes/idigital.help.js
-var import_pkce_challenge = __toESM(require_main());
-var import_querystring_es3 = __toESM(require_querystring_es3());
+var import_pkce_challenge = __toESM(require_main(), 1);
+var import_querystring_es3 = __toESM(require_querystring_es3(), 1);
 import crypto2 from "crypto";
 import url from "url";
 var IDigitalHelp = class {
@@ -47956,7 +47956,7 @@ var IDigitalToken = class {
 };
 
 // dist/lib/browser/classes/idigital.access.token.js
-var NodeJose = __toESM(require_lib());
+var NodeJose = __toESM(require_lib(), 1);
 
 // node_modules/jose/dist/node/esm/runtime/base64url.js
 import { Buffer as Buffer2 } from "buffer";
@@ -49488,10 +49488,10 @@ var IDigitalSession = class {
 };
 
 // dist/lib/browser/classes/idigital.strategy.js
-var import_passport_strategy = __toESM(require_lib2());
+var import_passport_strategy = __toESM(require_lib2(), 1);
 
 // dist/lib/browser/classes/idigital.id.token.js
-var NodeJose2 = __toESM(require_lib());
+var NodeJose2 = __toESM(require_lib(), 1);
 var IDigitalIDToken = class extends IDigitalToken {
   constructor(token, jwt) {
     super(token, jwt);
@@ -52562,12 +52562,12 @@ var IDigital = class {
       let idToken = null;
       let accessToken = null;
       const jwks = await this.getJwks();
-      if (type === IsAuthenticatedType.STRICT || IsAuthenticatedType.ONLY_ID_TOKEN) {
+      if (type === IsAuthenticatedType.STRICT || type === IsAuthenticatedType.ONLY_ID_TOKEN) {
         const nonce = session.get("nonce");
         const $idToken = session.get("idToken");
         idToken = await IDigitalIDToken.verify($idToken, jwks, nonce, this.options);
       }
-      if (type === IsAuthenticatedType.STRICT || IsAuthenticatedType.ONLY_ACCESS_TOKEN) {
+      if (type === IsAuthenticatedType.STRICT || type === IsAuthenticatedType.ONLY_ACCESS_TOKEN) {
         const $accessToken = session.get("accessToken");
         accessToken = await IDigitalAccessToken.verify($accessToken, jwks, this.options);
       }

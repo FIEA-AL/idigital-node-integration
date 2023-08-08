@@ -109,12 +109,12 @@ export default class IDigital {
             let idToken = null;
             let accessToken = null;
             const jwks = await this.getJwks();
-            if (type === IsAuthenticatedType.STRICT || IsAuthenticatedType.ONLY_ID_TOKEN) {
+            if (type === IsAuthenticatedType.STRICT || type === IsAuthenticatedType.ONLY_ID_TOKEN) {
                 const nonce = session.get('nonce');
                 const $idToken = session.get('idToken');
                 idToken = await IDigitalIDToken.verify($idToken, jwks, nonce, this.options);
             }
-            if (type === IsAuthenticatedType.STRICT || IsAuthenticatedType.ONLY_ACCESS_TOKEN) {
+            if (type === IsAuthenticatedType.STRICT || type === IsAuthenticatedType.ONLY_ACCESS_TOKEN) {
                 const $accessToken = session.get('accessToken');
                 accessToken = await IDigitalAccessToken.verify($accessToken, jwks, this.options);
             }

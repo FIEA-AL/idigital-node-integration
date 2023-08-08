@@ -112,12 +112,12 @@ class IDigital {
             let idToken = null;
             let accessToken = null;
             const jwks = await this.getJwks();
-            if (type === is_authenticated_type_1.IsAuthenticatedType.STRICT || is_authenticated_type_1.IsAuthenticatedType.ONLY_ID_TOKEN) {
+            if (type === is_authenticated_type_1.IsAuthenticatedType.STRICT || type === is_authenticated_type_1.IsAuthenticatedType.ONLY_ID_TOKEN) {
                 const nonce = session.get('nonce');
                 const $idToken = session.get('idToken');
                 idToken = await idigital_id_token_1.default.verify($idToken, jwks, nonce, this.options);
             }
-            if (type === is_authenticated_type_1.IsAuthenticatedType.STRICT || is_authenticated_type_1.IsAuthenticatedType.ONLY_ACCESS_TOKEN) {
+            if (type === is_authenticated_type_1.IsAuthenticatedType.STRICT || type === is_authenticated_type_1.IsAuthenticatedType.ONLY_ACCESS_TOKEN) {
                 const $accessToken = session.get('accessToken');
                 accessToken = await idigital_access_token_1.default.verify($accessToken, jwks, this.options);
             }
