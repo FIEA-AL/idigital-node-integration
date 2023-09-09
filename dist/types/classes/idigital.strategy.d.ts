@@ -1,7 +1,7 @@
-import { StrategyOptions } from "../interfaces/strategy";
+import { StrategyOptions } from '../interfaces/strategy';
 // @ts-ignore
 import { Strategy } from 'passport-strategy';
-import IDigital from "./idigital";
+import IDigital from './idigital';
 export default class IDigitalStrategy extends Strategy {
     _passReqToCallback: boolean;
     _client: IDigital;

@@ -1,6 +1,6 @@
-import IDigitalException from "../errors/idigital.exception.js";
-import IDigitalHelp from "./idigital.help.js";
-import { MESSAGES } from "../errors/messages.const.js";
+import IDigitalException from '../errors/idigital.exception.js';
+import IDigitalHelp from './idigital.help.js';
+import { MESSAGES } from '../errors/messages.const.js';
 export default class IDigitalToken {
     constructor(token, jwt) {
         Object.defineProperty(this, "token", {

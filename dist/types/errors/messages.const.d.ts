@@ -2,6 +2,7 @@ export declare const MESSAGES: {
     REQUIRED_SESSION: string;
     INVALID_JWT: string;
     DIVERGENT_CLIENT_ID: string;
+    INVALID_FLOW_TYPE: string;
     DIVERGENT_NONCE: string;
     DIVERGENT_STATE: string;
     DIVERGENT_ISSUER: string;
@@ -13,5 +14,6 @@ export declare const MESSAGES: {
     COULD_NOT_GENERATE_BYTES: string;
     HTTP_ERROR: string;
     COULD_NOT_FIND_PUBLIC_KEYS: string;
+    INVALID_CALLBACK_REQUEST_PARAMS: string;
     PASSPORT_CALLBACK_TYPE: string;
 };

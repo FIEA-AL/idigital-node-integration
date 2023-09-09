@@ -1,8 +1,8 @@
-import { DEFAULT_SESSION_STORAGE_NAME } from "../consts/session.js";
-import IDigitalException from "../errors/idigital.exception.js";
-import { MESSAGES } from "../errors/messages.const.js";
+import { DEFAULT_SESSION_STORAGE_NAME } from '../consts/session.js';
+import IDigitalException from '../errors/idigital.exception.js';
+import { MESSAGES } from '../errors/messages.const.js';
 export default class IDigitalSession {
-    constructor(options) {
+    constructor(options = {}) {
         Object.defineProperty(this, "storage", {
             enumerable: true,
             configurable: true,
@@ -21,7 +21,9 @@ export default class IDigitalSession {
             writable: true,
             value: void 0
         });
-        this.storageName = options.name || DEFAULT_SESSION_STORAGE_NAME;
+        options.name = options.name || DEFAULT_SESSION_STORAGE_NAME;
+        options.storage = options.storage || {};
+        this.storageName = options.name;
         this.storage = options.storage;
         this.options = options;
         this.start();
@@ -29,7 +31,7 @@ export default class IDigitalSession {
     static create(storage, storageName) {
         return new IDigitalSession({
             name: storageName,
-            storage
+            storage,
         });
     }
     start() {

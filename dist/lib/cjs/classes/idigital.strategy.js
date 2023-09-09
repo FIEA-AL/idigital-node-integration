@@ -38,7 +38,7 @@ class IDigitalStrategy extends passport_strategy_1.Strategy {
             const message = messages_const_1.MESSAGES.PASSPORT_CALLBACK_TYPE;
             throw new idigital_exception_1.default(500, message);
         }
-        this.name = "idigital";
+        this.name = 'idigital';
         this._verify = verify;
         if (options instanceof idigital_1.default) {
             this._client = options;
@@ -54,22 +54,18 @@ class IDigitalStrategy extends passport_strategy_1.Strategy {
             const params = idigital_help_1.default.getRequestParams(request);
             const session = idigital_session_1.default.create(request.session);
             if (Object.keys(params).length === 0) {
-                return this._client.authorize(session, this);
+                return this._client.flow.authorization.authorize(session, this);
             }
             else {
-                const tokenSet = await this._client.callback(session, { params });
+                const tokenSet = await this._client.flow.authorization.callback(session, { params });
                 const userInfo = tokenSet.idToken.payload;
-                const args = [
-                    tokenSet,
-                    userInfo,
-                    this.verifyDone.bind(this)
-                ];
+                const args = [tokenSet, userInfo, this.verifyDone.bind(this)];
                 if (this._passReqToCallback) {
                     args.unshift(request);
                 }
                 this._verify(...args);
             }
-        })().catch(error => {
+        })().catch((error) => {
             const self = this;
             self.error(error);
         });

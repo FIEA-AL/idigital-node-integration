@@ -1,9 +1,9 @@
-import IDigitalException from "../errors/idigital.exception.js";
+import IDigitalException from '../errors/idigital.exception.js';
 import { MESSAGES } from '../errors/messages.const.js';
 import pkceChallenge from 'pkce-challenge';
-import querystring from "querystring-es3";
+import querystring from 'querystring-es3';
 import crypto from 'crypto';
-import url from "url";
+import url from 'url';
 export default class IDigitalHelp {
     static applyVerboseMode(data, options) {
         if (options.verbose) {
@@ -56,7 +56,7 @@ export default class IDigitalHelp {
             const data = pkceChallenge();
             return {
                 codeVerifier: data.code_verifier,
-                codeChallenge: data.code_challenge
+                codeChallenge: data.code_challenge,
             };
         }
         catch (e) {

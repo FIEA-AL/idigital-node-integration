@@ -8,5 +8,5 @@ export interface JWKSKey {
 }
 
 export interface JWKS {
-    keys: JWKSKey[]
+    keys: JWKSKey[];
 }

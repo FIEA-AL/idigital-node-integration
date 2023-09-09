@@ -1,4 +1,4 @@
-import { RedirectLocation } from "./idigital";
+import { RedirectLocation } from './idigital';
 export type LogoutOptions = RedirectLocation & {
     afterSessionDestroy?: Function;
 };

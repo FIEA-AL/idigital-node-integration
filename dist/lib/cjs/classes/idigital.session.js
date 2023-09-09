@@ -5,7 +5,7 @@ const session_1 = require("../consts/session.js");
 const idigital_exception_1 = tslib_1.__importDefault(require("../errors/idigital.exception.js"));
 const messages_const_1 = require("../errors/messages.const.js");
 class IDigitalSession {
-    constructor(options) {
+    constructor(options = {}) {
         Object.defineProperty(this, "storage", {
             enumerable: true,
             configurable: true,
@@ -24,7 +24,9 @@ class IDigitalSession {
             writable: true,
             value: void 0
         });
-        this.storageName = options.name || session_1.DEFAULT_SESSION_STORAGE_NAME;
+        options.name = options.name || session_1.DEFAULT_SESSION_STORAGE_NAME;
+        options.storage = options.storage || {};
+        this.storageName = options.name;
         this.storage = options.storage;
         this.options = options;
         this.start();
@@ -32,7 +34,7 @@ class IDigitalSession {
     static create(storage, storageName) {
         return new IDigitalSession({
             name: storageName,
-            storage
+            storage,
         });
     }
     start() {

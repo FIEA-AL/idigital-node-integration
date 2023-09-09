@@ -1,9 +1,9 @@
-import { Session, SessionOptions } from "../interfaces/session";
+import { Session, SessionOptions } from '../interfaces/session';
 export default class IDigitalSession implements Session {
     private readonly storage;
     private readonly options;
     private readonly storageName;
-    constructor(options: SessionOptions);
+    constructor(options?: SessionOptions);
     static create(storage: Record<string, any>, storageName?: string): IDigitalSession;
     start(): void;
     destroy(): void;

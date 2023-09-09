@@ -19,14 +19,14 @@ class IDigitalAccessToken extends idigital_token_1.default {
             const jwks = jose.createLocalJWKSet(keyStore.toJSON());
             const jwt = await jose.jwtVerify(token, jwks, {
                 algorithms: ['RS256'],
-                typ: 'at+jwt'
+                typ: 'at+jwt',
             });
             this.verifyAudience(jwt.payload.aud, options.applicationHost);
             this.verifyClient(jwt.payload.client_id, options.clientId);
             this.verifyIssuer(jwt.payload.iss, options.issuer);
             return new IDigitalAccessToken(token, {
                 header: jwt.protectedHeader,
-                payload: jwt.payload
+                payload: jwt.payload,
             });
         }
         this.isNotJWT();

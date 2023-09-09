@@ -1,4 +1,4 @@
-import { BrowserSessionOptions, Session } from "../interfaces/session";
+import { BrowserSessionOptions, Session } from '../interfaces/session';
 export declare class IDigitalBrowserSession implements Session {
     private readonly options;
     private readonly storage;

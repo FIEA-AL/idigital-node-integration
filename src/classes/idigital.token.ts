@@ -1,6 +1,6 @@
-import IDigitalException from "@errors/idigital.exception";
-import IDigitalHelp from "@classes/idigital.help";
-import { MESSAGES } from "@errors/messages.const";
+import IDigitalException from '@errors/idigital.exception';
+import IDigitalHelp from '@classes/idigital.help';
+import { MESSAGES } from '@errors/messages.const';
 
 export default class IDigitalToken {
     public readonly token: string;
@@ -92,7 +92,7 @@ export default class IDigitalToken {
     private static getData(token?: string, offset?: number) {
         if (token != null && IDigitalHelp.isJWT(token)) {
             let data = token.split('.').slice(offset, 1).pop();
-            data = IDigitalHelp.getBase64Decoded(data)
+            data = IDigitalHelp.getBase64Decoded(data);
             return JSON.parse(data);
         }
 

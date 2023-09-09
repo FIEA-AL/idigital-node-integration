@@ -16,7 +16,7 @@ export interface Session {
     setManyKeys(keys: Record<string, any>): Session;
 }
 export type SessionOptions = {
-    storage: Record<string, any>;
+    storage?: Record<string, any>;
     name?: string;
 };
 export interface BrowserSession {

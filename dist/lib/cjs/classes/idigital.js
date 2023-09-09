@@ -1,17 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
+const idigital_authorization_code_1 = tslib_1.__importDefault(require("./idigital.authorization.code.js"));
 const is_authenticated_type_1 = require("../enums/is.authenticated.type.js");
 const idigital_access_token_1 = tslib_1.__importDefault(require("./idigital.access.token.js"));
-const idigital_exception_1 = tslib_1.__importDefault(require("../errors/idigital.exception.js"));
-const idigital_id_token_1 = tslib_1.__importDefault(require("./idigital.id.token.js"));
-const idigital_help_1 = tslib_1.__importDefault(require("./idigital.help.js"));
+const idigital_implicit_1 = tslib_1.__importDefault(require("./idigital.implicit.js"));
 const idigital_http_1 = tslib_1.__importDefault(require("./idigital.http.js"));
 const messages_const_1 = require("../errors/messages.const.js");
+const idigital_id_token_1 = tslib_1.__importDefault(require("./idigital.id.token.js"));
 const discovery_1 = require("../consts/discovery.js");
+const flow_type_1 = require("../enums/flow.type.js");
+const idigital_help_1 = tslib_1.__importDefault(require("./idigital.help.js"));
 class IDigital {
-    constructor(options) {
-        Object.defineProperty(this, "options", {
+    constructor(config) {
+        Object.defineProperty(this, "config", {
             enumerable: true,
             configurable: true,
             writable: true,
@@ -29,193 +31,135 @@ class IDigital {
             writable: true,
             value: undefined
         });
-        this.options = options;
-        options.responseType = options.responseType || 'code';
-        options.scopes = options.scopes || ['openid', 'email'];
-        options.applicationType = options.applicationType || 'web';
-        options.grantType = options.grantType || 'authorization_code';
-        options.codeChallengeMethod = options.codeChallengeMethod || 'S256';
-        options.tokenEndpointAuthMethod = options.tokenEndpointAuthMethod || 'none';
-        options.postLogoutRedirectUri = options.postLogoutRedirectUri || options.issuer;
+        this.config = config;
     }
     static async create(options) {
-        const instance = new IDigital(options);
+        const flow = this.getFlowType(options);
+        const config = flow.getConfig(options);
+        const instance = new IDigital(config);
         await instance.prepare();
         return instance;
+    }
+    get flow() {
+        return {
+            authorization: new idigital_authorization_code_1.default(this),
+            implicit: new idigital_implicit_1.default(this),
+        };
     }
     isEnabled(session) {
         return session.get('enable');
     }
-    async authorize(session, location) {
-        const discovery = await this.getDiscovery();
-        const authorizationEndpoint = discovery.authorization_endpoint;
-        const pkceKeysPair = idigital_help_1.default.getPkceKeysPair(this.options);
-        const nonce = idigital_help_1.default.getRandomBytes(32, this.options);
-        const state = idigital_help_1.default.getRandomBytes(32, this.options);
-        session.set('codeChallenge', pkceKeysPair.codeChallenge);
-        session.set('codeVerifier', pkceKeysPair.codeVerifier);
-        session.set('enable', true);
-        session.set('nonce', nonce);
-        session.set('state', state);
-        const url = idigital_help_1.default.getParameterizedUrl(authorizationEndpoint, [
-            ['code_challenge_method', this.options.codeChallengeMethod],
-            ['code_challenge', pkceKeysPair.codeChallenge],
-            ['response_type', this.options.responseType],
-            ['redirect_uri', this.options.redirectUri],
-            ['resource', this.options.applicationHost],
-            ['scope', this.options.scopes.join('+')],
-            ['client_id', this.options.clientId],
-            ['nonce', nonce],
-            ['state', state]
-        ]);
-        if (location && typeof location.redirect == "function") {
-            return location.redirect(url.href);
-        }
-        return url.href;
-    }
-    async callback(session, options) {
-        var _a, _b;
-        if ((options.params || {}).iss !== this.options.issuer) {
-            const message = messages_const_1.MESSAGES.DIVERGENT_ISSUER;
-            throw new idigital_exception_1.default(400, message);
-        }
-        if ((options.params || {}).state !== session.get('state')) {
-            const message = messages_const_1.MESSAGES.DIVERGENT_STATE;
-            throw new idigital_exception_1.default(400, message);
-        }
-        let idToken = null;
-        let accessToken = null;
-        const tokens = await this.getTokens(session, (options.params || {}).code);
-        if (options.verifyTokens !== false) {
-            const jwks = await this.getJwks();
-            const nonce = session.get('nonce');
-            idToken = await idigital_id_token_1.default.verify(tokens.id_token, jwks, nonce, this.options);
-            accessToken = await idigital_access_token_1.default.verify(tokens.access_token, jwks, this.options);
-        }
-        else {
-            accessToken = tokens.access_token;
-            idToken = tokens.id_token;
-        }
-        session.set('accessToken', tokens.access_token);
-        session.set('code', (options.params || {}).code);
-        session.set('idToken', tokens.id_token);
-        session.set('enable', true);
-        return {
-            nonce: ((_a = options.include) === null || _a === void 0 ? void 0 : _a.includes('nonce')) ? session.get('nonce') : null,
-            state: ((_b = options.include) === null || _b === void 0 ? void 0 : _b.includes('state')) ? session.get('state') : null,
-            accessToken,
-            idToken
-        };
-    }
-    async isAuthenticated(session, type = is_authenticated_type_1.IsAuthenticatedType.STRICT) {
-        try {
-            let idToken = null;
-            let accessToken = null;
-            const jwks = await this.getJwks();
-            if (type === is_authenticated_type_1.IsAuthenticatedType.STRICT || type === is_authenticated_type_1.IsAuthenticatedType.ONLY_ID_TOKEN) {
-                const nonce = session.get('nonce');
-                const $idToken = session.get('idToken');
-                idToken = await idigital_id_token_1.default.verify($idToken, jwks, nonce, this.options);
-            }
-            if (type === is_authenticated_type_1.IsAuthenticatedType.STRICT || type === is_authenticated_type_1.IsAuthenticatedType.ONLY_ACCESS_TOKEN) {
-                const $accessToken = session.get('accessToken');
-                accessToken = await idigital_access_token_1.default.verify($accessToken, jwks, this.options);
-            }
-            return {
-                status: true,
-                accessToken,
-                idToken
-            };
-        }
-        catch (e) {
-            idigital_help_1.default.applyVerboseMode(e, this.options);
-            return {
-                accessToken: null,
-                idToken: null,
-                status: false
-            };
-        }
-    }
-    async logout(session, options) {
-        const discovery = await this.getDiscovery();
-        const endSessionEndpoint = discovery.end_session_endpoint;
-        const url = idigital_help_1.default.getParameterizedUrl(endSessionEndpoint, [
-            ['post_logout_redirect_uri', this.options.postLogoutRedirectUri],
-            ['client_id', this.options.clientId]
-        ]);
-        if (typeof session.destroy == "function") {
-            session.destroy();
-        }
-        if (typeof options.afterSessionDestroy == "function") {
-            options.afterSessionDestroy();
-        }
-        if (options && typeof options.redirect == "function") {
-            return options.redirect(url.href);
-        }
-        return url.href;
-    }
-    async getTokens(session, code) {
-        const discovery = await this.getDiscovery();
-        const url = discovery.token_endpoint;
-        return idigital_http_1.default.getTokens(url, {
-            code_challenge_method: this.options.codeChallengeMethod,
-            code_challenge: session.get('codeChallenge'),
-            code_verifier: session.get('codeVerifier'),
-            redirect_uri: this.options.redirectUri,
-            resource: this.options.applicationHost,
-            grant_type: this.options.grantType,
-            client_id: this.options.clientId,
-            nonce: session.get('nonce'),
-            code: code
-        }, this.options);
-    }
-    async prepare() {
-        await this.getDiscovery();
-        await this.getJwks();
+    getSession(session) {
+        return session !== null && session !== void 0 ? session : this.config.cache;
     }
     async getJwks() {
-        if (this.options.jwks) {
-            return this.options.jwks;
+        if (this.config.jwks) {
+            return this.config.jwks;
         }
         if (this.jwks) {
             return this.jwks;
         }
-        if (this.options.cache) {
-            const jwks = this.options.cache.get('jwks');
+        if (this.config.cache) {
+            const jwks = this.config.cache.get('jwks');
             if (jwks) {
                 this.jwks = jwks;
                 return this.jwks;
             }
         }
         const discovery = await this.getDiscovery();
-        const jwks = await idigital_http_1.default.getJwks(discovery.jwks_uri, this.options);
-        if (this.options.cache) {
-            this.options.cache.set('jwks', jwks);
+        const jwks = await idigital_http_1.default.getJwks(discovery.jwks_uri, this.config);
+        if (this.config.cache) {
+            this.config.cache.set('jwks', jwks);
         }
         this.jwks = jwks;
         return this.jwks;
     }
     async getDiscovery() {
-        if (this.options.discovery) {
-            return this.options.discovery;
+        if (this.config.discovery) {
+            return this.config.discovery;
         }
         if (this.discovery) {
             return this.discovery;
         }
-        if (this.options.cache) {
-            const discovery = this.options.cache.get('discovery');
+        if (this.config.cache) {
+            const discovery = this.config.cache.get('discovery');
             if (discovery) {
                 this.discovery = discovery;
                 return this.discovery;
             }
         }
-        const url = this.options.issuer + discovery_1.DISCOVERY.PATHNAME;
-        const discovery = await idigital_http_1.default.getDiscovery(url, this.options);
-        if (this.options.cache) {
-            this.options.cache.set('discovery', discovery);
+        const url = this.config.issuer + discovery_1.DISCOVERY.PATHNAME;
+        const discovery = await idigital_http_1.default.getDiscovery(url, this.config);
+        if (this.config.cache) {
+            this.config.cache.set('discovery', discovery);
         }
         this.discovery = discovery;
         return this.discovery;
+    }
+    async isAuthenticated(session, type = is_authenticated_type_1.IsAuthenticatedType.STRICT) {
+        try {
+            let idToken = null;
+            let accessToken = null;
+            const jwks = await this.getJwks();
+            const $session = this.getSession(session);
+            if (type === is_authenticated_type_1.IsAuthenticatedType.STRICT || type === is_authenticated_type_1.IsAuthenticatedType.ONLY_ID_TOKEN) {
+                const nonce = $session.get('nonce');
+                const $idToken = $session.get('idToken');
+                idToken = await idigital_id_token_1.default.verify($idToken, jwks, nonce, this.config);
+            }
+            if (type === is_authenticated_type_1.IsAuthenticatedType.STRICT || type === is_authenticated_type_1.IsAuthenticatedType.ONLY_ACCESS_TOKEN) {
+                const $accessToken = $session.get('accessToken');
+                accessToken = await idigital_access_token_1.default.verify($accessToken, jwks, this.config);
+            }
+            return {
+                status: true,
+                accessToken,
+                idToken,
+            };
+        }
+        catch (e) {
+            idigital_help_1.default.applyVerboseMode(e, this.config);
+            return {
+                accessToken: null,
+                idToken: null,
+                status: false,
+            };
+        }
+    }
+    async logout(session, options) {
+        const $session = this.getSession(session);
+        const discovery = await this.getDiscovery();
+        const endSessionEndpoint = discovery.end_session_endpoint;
+        const url = idigital_help_1.default.getParameterizedUrl(endSessionEndpoint, [
+            ['post_logout_redirect_uri', this.config.postLogoutRedirectUri],
+            ['client_id', this.config.clientId],
+        ]);
+        if (typeof $session.destroy == 'function') {
+            $session.destroy();
+        }
+        if (typeof options.afterSessionDestroy == 'function') {
+            options.afterSessionDestroy();
+        }
+        if (options && typeof options.redirect == 'function') {
+            return options.redirect(url.href);
+        }
+        return url.href;
+    }
+    async prepare() {
+        await this.getDiscovery();
+        await this.getJwks();
+    }
+    static getFlowType(options) {
+        switch (options.flowType) {
+            case flow_type_1.FlowType.AuthorizationCode:
+                return idigital_authorization_code_1.default;
+            case flow_type_1.FlowType.Implicit:
+                return idigital_authorization_code_1.default;
+            default: {
+                const message = messages_const_1.MESSAGES.INVALID_FLOW_TYPE;
+                throw new Error(message);
+            }
+        }
     }
 }
 exports.default = IDigital;

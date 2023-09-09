@@ -18,18 +18,20 @@ class IDigitalHttp {
     }
     static get(url, options) {
         const headers = { 'Content-Type': this.JSON_TYPE };
-        return axiosInstance.get(url, { headers })
-            .then(response => response.data)
-            .catch(e => {
+        return axiosInstance
+            .get(url, { headers })
+            .then((response) => response.data)
+            .catch((e) => {
             idigital_help_1.default.applyVerboseMode(e, options);
             throw new idigital_exception_1.default(500, messages_const_1.MESSAGES.HTTP_ERROR);
         });
     }
     static post(url, data, options) {
         const headers = { 'Content-Type': this.WWW_FORM_TYPE };
-        return axiosInstance.post(url, data, { headers })
-            .then(response => response.data)
-            .catch(e => {
+        return axiosInstance
+            .post(url, data, { headers })
+            .then((response) => response.data)
+            .catch((e) => {
             idigital_help_1.default.applyVerboseMode(e, options);
             throw new idigital_exception_1.default(500, messages_const_1.MESSAGES.HTTP_ERROR);
         });

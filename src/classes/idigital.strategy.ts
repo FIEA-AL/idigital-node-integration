@@ -1,18 +1,18 @@
-import IDigitalException from "@errors/idigital.exception";
-import { StrategyOptions } from "@interfaces/strategy";
-import IDigitalHelp from "@classes/idigital.help";
-import { MESSAGES } from "@errors/messages.const";
-import IDigitalSession from "./idigital.session";
+import IDigitalException from '@errors/idigital.exception';
+import { StrategyOptions } from '@interfaces/strategy';
+import IDigitalHelp from '@classes/idigital.help';
+import { MESSAGES } from '@errors/messages.const';
+import IDigitalSession from './idigital.session';
 import { IDToken } from '@interfaces/id.token';
 // @ts-ignore
 import { Strategy } from 'passport-strategy';
-import IDigital from "@classes/idigital";
+import IDigital from '@classes/idigital';
 
 export default class IDigitalStrategy extends Strategy {
     public _passReqToCallback: boolean;
     public _client: IDigital;
     public _verify: Function;
-    public name: string
+    public name: string;
 
     constructor(options: StrategyOptions | IDigital, verify: Function) {
         super();
@@ -22,7 +22,7 @@ export default class IDigitalStrategy extends Strategy {
             throw new IDigitalException(500, message);
         }
 
-        this.name = "idigital";
+        this.name = 'idigital';
         this._verify = verify;
 
         if (options instanceof IDigital) {
@@ -40,16 +40,12 @@ export default class IDigitalStrategy extends Strategy {
             const session = IDigitalSession.create(request.session);
 
             if (Object.keys(params).length === 0) {
-                return this._client.authorize(session, this as any);
+                return this._client.flow.authorization.authorize(session, this as any);
             } else {
-                const tokenSet = await this._client.callback(session, { params });
+                const tokenSet = await this._client.flow.authorization.callback(session, { params });
                 const userInfo = (tokenSet.idToken as IDToken).payload;
 
-                const args = [
-                    tokenSet,
-                    userInfo,
-                    this.verifyDone.bind(this)
-                ];
+                const args = [tokenSet, userInfo, this.verifyDone.bind(this)];
 
                 if (this._passReqToCallback) {
                     args.unshift(request);
@@ -57,7 +53,7 @@ export default class IDigitalStrategy extends Strategy {
 
                 this._verify(...args);
             }
-        })().catch(error => {
+        })().catch((error) => {
             const self = this as any;
             self.error(error);
         });

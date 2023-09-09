@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.IDigitalBrowserSession = exports.IDigitalAccessToken = exports.IsAuthenticatedType = exports.IDigitalStrategy = exports.IDigitalIDToken = exports.EnvironmentType = exports.IDigitalSession = exports.IDigitalToken = exports.IDigital = void 0;
+exports.IDigitalBrowserSession = exports.IDigitalAccessToken = exports.IsAuthenticatedType = exports.IDigitalStrategy = exports.IDigitalIDToken = exports.EnvironmentType = exports.IDigitalSession = exports.IDigitalToken = exports.FlowType = exports.IDigital = void 0;
 const tslib_1 = require("tslib");
 const idigital_browser_session_1 = require("./classes/idigital.browser.session.js");
 Object.defineProperty(exports, "IDigitalBrowserSession", { enumerable: true, get: function () { return idigital_browser_session_1.IDigitalBrowserSession; } });
@@ -18,6 +18,8 @@ const idigital_session_1 = tslib_1.__importDefault(require("./classes/idigital.s
 exports.IDigitalSession = idigital_session_1.default;
 const idigital_token_1 = tslib_1.__importDefault(require("./classes/idigital.token.js"));
 exports.IDigitalToken = idigital_token_1.default;
+const flow_type_1 = require("./enums/flow.type.js");
+Object.defineProperty(exports, "FlowType", { enumerable: true, get: function () { return flow_type_1.FlowType; } });
 const idigital_1 = tslib_1.__importDefault(require("./classes/idigital.js"));
 exports.IDigital = idigital_1.default;
 //# sourceMappingURL=index.js.map

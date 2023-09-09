@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from "../consts/http.status.js";
+import { HTTP_STATUS } from '../consts/http.status.js';
 export default class IDigitalException extends Error {
     constructor(status, message) {
         super(message);

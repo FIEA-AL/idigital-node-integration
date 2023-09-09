@@ -1,15 +1,17 @@
-import { DEFAULT_SESSION_STORAGE_NAME } from "@consts/session";
-import { Session, SessionOptions } from "@interfaces/session";
-import IDigitalException from "@errors/idigital.exception";
-import { MESSAGES } from "@errors/messages.const";
+import { DEFAULT_SESSION_STORAGE_NAME } from '@consts/session';
+import { Session, SessionOptions } from '@interfaces/session';
+import IDigitalException from '@errors/idigital.exception';
+import { MESSAGES } from '@errors/messages.const';
 
 export default class IDigitalSession implements Session {
     private readonly storage: Record<string, any>;
     private readonly options: SessionOptions;
     private readonly storageName: string;
 
-    constructor(options: SessionOptions) {
-        this.storageName = options.name || DEFAULT_SESSION_STORAGE_NAME;
+    constructor(options: SessionOptions = {}) {
+        options.name = options.name || DEFAULT_SESSION_STORAGE_NAME;
+        options.storage = options.storage || {};
+        this.storageName = options.name;
         this.storage = options.storage;
         this.options = options;
         this.start();
@@ -18,7 +20,7 @@ export default class IDigitalSession implements Session {
     public static create(storage: Record<string, any>, storageName?: string) {
         return new IDigitalSession({
             name: storageName,
-            storage
+            storage,
         });
     }
 

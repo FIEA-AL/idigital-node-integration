@@ -59,7 +59,7 @@ class IDigitalHelp {
             const data = (0, pkce_challenge_1.default)();
             return {
                 codeVerifier: data.code_verifier,
-                codeChallenge: data.code_challenge
+                codeChallenge: data.code_challenge,
             };
         }
         catch (e) {

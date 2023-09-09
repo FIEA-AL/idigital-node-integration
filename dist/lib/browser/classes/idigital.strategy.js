@@ -1,9 +1,9 @@
-import IDigitalException from "../errors/idigital.exception.js";
-import IDigitalHelp from "./idigital.help.js";
-import { MESSAGES } from "../errors/messages.const.js";
-import IDigitalSession from "./idigital.session.js";
+import IDigitalException from '../errors/idigital.exception.js';
+import IDigitalHelp from './idigital.help.js';
+import { MESSAGES } from '../errors/messages.const.js';
+import IDigitalSession from './idigital.session.js';
 import { Strategy } from 'passport-strategy';
-import IDigital from "./idigital.js";
+import IDigital from './idigital.js';
 export default class IDigitalStrategy extends Strategy {
     constructor(options, verify) {
         super();
@@ -35,7 +35,7 @@ export default class IDigitalStrategy extends Strategy {
             const message = MESSAGES.PASSPORT_CALLBACK_TYPE;
             throw new IDigitalException(500, message);
         }
-        this.name = "idigital";
+        this.name = 'idigital';
         this._verify = verify;
         if (options instanceof IDigital) {
             this._client = options;
@@ -51,22 +51,18 @@ export default class IDigitalStrategy extends Strategy {
             const params = IDigitalHelp.getRequestParams(request);
             const session = IDigitalSession.create(request.session);
             if (Object.keys(params).length === 0) {
-                return this._client.authorize(session, this);
+                return this._client.flow.authorization.authorize(session, this);
             }
             else {
-                const tokenSet = await this._client.callback(session, { params });
+                const tokenSet = await this._client.flow.authorization.callback(session, { params });
                 const userInfo = tokenSet.idToken.payload;
-                const args = [
-                    tokenSet,
-                    userInfo,
-                    this.verifyDone.bind(this)
-                ];
+                const args = [tokenSet, userInfo, this.verifyDone.bind(this)];
                 if (this._passReqToCallback) {
                     args.unshift(request);
                 }
                 this._verify(...args);
             }
-        })().catch(error => {
+        })().catch((error) => {
             const self = this;
             self.error(error);
         });

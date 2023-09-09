@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { IDigitalOptions } from "../interfaces/idigital";
+import { IDigitalOptions } from '../interfaces/idigital';
 export default class IDigitalHelp {
     static applyVerboseMode(data: any, options: IDigitalOptions): void;
     static getParameterizedUrl(url: string, params: Array<[string, string]>): URL;

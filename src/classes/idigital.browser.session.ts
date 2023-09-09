@@ -1,7 +1,7 @@
-import { BrowserSession, BrowserSessionOptions, Session } from "@interfaces/session";
-import { DEFAULT_SESSION_STORAGE_NAME } from "@consts/session";
-import IDigitalException from "@errors/idigital.exception";
-import { MESSAGES } from "@errors/messages.const";
+import { BrowserSession, BrowserSessionOptions, Session } from '@interfaces/session';
+import { DEFAULT_SESSION_STORAGE_NAME } from '@consts/session';
+import IDigitalException from '@errors/idigital.exception';
+import { MESSAGES } from '@errors/messages.const';
 
 export class IDigitalBrowserSession implements Session {
     private readonly options: BrowserSessionOptions;
@@ -35,15 +35,18 @@ export class IDigitalBrowserSession implements Session {
         return object[key] ? object[key] : null;
     }
 
-    public getAllKeys(): Record<string, any>{
+    public getAllKeys(): Record<string, any> {
         return this.storage.getItem(this.storageName)!;
     }
 
     public set(key: string, value: any): Session {
         const object = this.storage.getItem(this.storageName);
-        this.storage.setItem(this.storageName, Object.assign(object, {
-            [key]: value
-        }));
+        this.storage.setItem(
+            this.storageName,
+            Object.assign(object, {
+                [key]: value,
+            }),
+        );
 
         return this;
     }

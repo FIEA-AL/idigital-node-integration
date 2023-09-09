@@ -1,6 +1,6 @@
-import { IDigitalOptions } from "../interfaces/idigital";
-import { TokenResponse } from "../interfaces/tokens";
-import { Discovery } from "../interfaces/discovery";
+import { IDigitalOptions } from '../interfaces/idigital';
+import { TokenResponse } from '../interfaces/tokens';
+import { Discovery } from '../interfaces/discovery';
 export default class IDigitalHttp {
     private static WWW_FORM_TYPE;
     private static JSON_TYPE;

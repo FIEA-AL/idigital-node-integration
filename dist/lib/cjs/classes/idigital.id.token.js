@@ -19,14 +19,14 @@ class IDigitalIDToken extends idigital_token_1.default {
             const jwks = jose.createLocalJWKSet(keyStore.toJSON());
             const jwt = await jose.jwtVerify(token, jwks, {
                 algorithms: ['RS256'],
-                typ: 'JWT'
+                typ: 'JWT',
             });
             this.verifyAudience(jwt.payload.aud, options.clientId);
             this.verifyNonce(jwt.payload.nonce, nonce);
             this.verifyIssuer(jwt.payload.iss, options.issuer);
             return new IDigitalIDToken(token, {
                 header: jwt.protectedHeader,
-                payload: jwt.payload
+                payload: jwt.payload,
             });
         }
         this.verifyNonce(nonce, nonce);

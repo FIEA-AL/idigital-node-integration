@@ -52,7 +52,7 @@ class IDigitalBrowserSession {
     set(key, value) {
         const object = this.storage.getItem(this.storageName);
         this.storage.setItem(this.storageName, Object.assign(object, {
-            [key]: value
+            [key]: value,
         }));
         return this;
     }

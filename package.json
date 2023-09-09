@@ -2,7 +2,7 @@
   "private": false,
   "license": "MIT",
   "type": "module",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "name": "@fiea-al/idigital-node-integration",
   "keywords": [
     "IDigital",
@@ -33,6 +33,7 @@
   ],
   "description": "IDigital OpenID Connect Integration",
   "scripts": {
+    "format": "prettier --write src/",
     "build:cjs": "npx tsc -p ./tsconfig.cjs.json && npx tsc-alias -f -p ./tsconfig.cjs.json",
     "build:esm": "npx tsc -p ./tsconfig.esm.json && npx tsc-alias -f -p ./tsconfig.esm.json",
     "build:types": "npx tsc -p ./tsconfig.types.json && npx tsc-alias -f -p ./tsconfig.types.json",
@@ -86,7 +87,7 @@
     "node-jose": "2.2.0",
     "passport-strategy": "1.0.0",
     "path-browserify": "1.0.1",
-    "pkce-challenge": "3.0.0",
+    "pkce-challenge": "3.1.0",
     "querystring-es3": "0.2.1",
     "stream": "0.0.2",
     "stream-http": "3.2.0",

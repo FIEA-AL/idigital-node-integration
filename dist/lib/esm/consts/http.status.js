@@ -62,6 +62,6 @@ export const HTTP_STATUS = {
     508: 'LoopDetected',
     509: 'BandwidthLimitExceeded',
     510: 'NotExtended',
-    511: 'NetworkAuthenticationRequire'
+    511: 'NetworkAuthenticationRequire',
 };
 //# sourceMappingURL=http.status.js.map

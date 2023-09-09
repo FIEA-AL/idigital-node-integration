@@ -1,6 +1,6 @@
-import { DEFAULT_SESSION_STORAGE_NAME } from "../consts/session.js";
-import IDigitalException from "../errors/idigital.exception.js";
-import { MESSAGES } from "../errors/messages.const.js";
+import { DEFAULT_SESSION_STORAGE_NAME } from '../consts/session.js';
+import IDigitalException from '../errors/idigital.exception.js';
+import { MESSAGES } from '../errors/messages.const.js';
 export class IDigitalBrowserSession {
     constructor(options) {
         Object.defineProperty(this, "options", {
@@ -48,7 +48,7 @@ export class IDigitalBrowserSession {
     set(key, value) {
         const object = this.storage.getItem(this.storageName);
         this.storage.setItem(this.storageName, Object.assign(object, {
-            [key]: value
+            [key]: value,
         }));
         return this;
     }
