@@ -24,10 +24,13 @@ Deve ser solicitado a criação em ambiente de desenvolvimento:
 
 �️ Instalação
 1. Instalar Dependências
+```bash
 npm install https://github.com/FIEA-AL/idigital-node-integration.git#v1.0.0
 npm install express-session @types/express-session
 npm install cookie-parser && npm install --save-dev @types/cookie-parser
+```
 2. Configurar Variáveis de Ambiente
+```env
 FRONTEND_ERROR_URL=http://localhost:3001/login
 # IDigital SSO Configuration
 SSO_CLIENT_ID=your-idigital-client-id
@@ -42,23 +45,26 @@ SESSION_SECRET=your-super-secret-session-key-here
 DATABASE_URL="file:./dev.db"
 JWT_SECRET=seu_jwt_secret_aqui
 PORT=3000
+```
 3. Configurar Express Session
 ⚠️ CRÍTICO: A configuração da sessão Express é fundamental para o funcionamento do SSO.
 
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET || 'default-session-secret',
-      resave: false,
-      saveUninitialized: true, // IMPORTANTE: permite criar sessão
-      name: 'idigital.session',
-      cookie: {
-        secure: process.env.NODE_ENV === 'production', // false em dev/localhost
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000, // 24 horas
-        sameSite: 'lax', // IMPORTANTE: para callbacks OAuth
-      },
-    }),
-  );
+```javascript
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'default-session-secret',
+    resave: false,
+    saveUninitialized: true, // IMPORTANTE: permite criar sessão
+    name: 'idigital.session',
+    cookie: {
+      secure: process.env.NODE_ENV === 'production', // false em dev/localhost
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 horas
+      sameSite: 'lax', // IMPORTANTE: para callbacks OAuth
+    },
+  }),
+);
+```
 // main.ts
 import session from 'express-session';
 ​
@@ -85,6 +91,7 @@ async function bootstrap() {
 }
 bootstrap();
 📁 Estrutura da Implementação de Exemplo
+```
 session.d.ts
 src/idigital/
 ├── idigital.service.ts    # Serviço principal do SSO
@@ -95,8 +102,10 @@ src/idigital/
 ​
 src/types/
 └── session.d.ts           # Tipos TypeScript para sessão
+```
 🏗️ Implementação
 1. Tipos de Sessão (session.d.ts)
+```typescript
 import 'express-session';
 
 declare module 'express-session' {
@@ -115,6 +124,7 @@ declare module 'express-session' {
     };
   }
 }
+```
 // src/types/session.d.ts
 import 'express-session';
 ​
@@ -135,7 +145,7 @@ declare module 'express-session' {
   }
 }
 2. Service (idigital.service.ts)
--
+```typescript
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import {
   IDigital,
@@ -297,9 +307,10 @@ export class IDigitalService {
     }
   }
 }
+```
 ​
 3. Controller (idigital.controller.ts)
--
+```typescript
 import { Controller, Get, Req, Res, Query } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { IDigitalService } from './idigital.service';
@@ -396,8 +407,10 @@ export class IDigitalController {
     };
   }
 }
+```
 ​
 4. Module (idigital.module.ts)
+```typescript
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../user/user.module';
@@ -423,8 +436,10 @@ import { IDigitalService } from './idigital.service';
   exports: [IDigitalService],
 })
 export class IDigitalModule {}
+```
 ​
 5. Integração no App Module
+```typescript
 // src/app.module.ts
 import { Module } from '@nestjs/common';
 import { IDigitalModule } from './idigital/idigital.module';
@@ -436,17 +451,7 @@ import { IDigitalModule } from './idigital/idigital.module';
   ],
 })
 export class AppModule {}
-// src/app.module.ts
-import { Module } from '@nestjs/common';
-import { IDigitalModule } from './idigital/idigital.module';
-​
-@Module({
-  imports: [
-    // ... outros módulos
-    IDigitalModule,
-  ],
-})
-export class AppModule {}
+```
 🛣️ Rotas Disponíveis
 Rota	Método	Descrição
 /idigital/login	GET	Inicia processo de login SSO
@@ -455,10 +460,15 @@ Rota	Método	Descrição
 /idigital/status	GET	Verifica status de autenticação
 💻 Exemplo de Como Usar no Frontend 
 Iniciar Login
+```html
 <a href="/idigital/login" class="btn-login">Entrar com IDigital</a>
+```
 Logout
+```html
 <a href="/idigital/logout" class="btn-logout">Sair</a>
+```
 Verificar Status
+```javascript
 async function checkAuthStatus() {
   const response = await fetch('/idigital/status');
   const data = await response.json();
@@ -469,12 +479,14 @@ async function checkAuthStatus() {
     console.log('❌ Usuário não autenticado');
   }
 }
+```
 � Problemas Conhecidos e Soluções
 ⚠️ Erro: "A propriedade state enviada difere da armazenada"
 Causa: Configuração incorreta da sessão Express.
 
 Solução: 
 
+```javascript
 // main.ts - Configuração CORRETA
 app.use(
   session({
@@ -489,7 +501,9 @@ app.use(
     },
   }),
 );
+```
 Variáveis de Ambiente Produção
+```env
 NODE_ENV=production
 ​
 SESSION_SECRET=super-secret-production-key
@@ -500,13 +514,17 @@ APP_BASE_URL=https://yourdomain.com
 // Exemplo
 FRONTEND_SUCCESS_URL=https://yourdomain.com/dashboard
 FRONTEND_ERROR_URL=https://yourdomain.com/login
+```
 🧪 Testando a Implementação
 1. Teste Local
+```bash
 # Iniciar aplicação
 npm run start:dev
 ​
 # Acessar no navegador
 http://localhost:3000/idigital/login
+```
+
 Usuário clica "Entrar" → GET /idigital/login
 
 Sistema gera PKCE → Redireciona para IDigital
@@ -531,11 +549,9 @@ A biblioteca oficial @fiea-al/idigital-node-integration garante:
 ✅ Timeouts apropriados para requisições
 
 📚 Recursos Adicionais
-Biblioteca Node.js
-
-NestJS Sessions
-
-Express Session
+- [Biblioteca Node.js](https://github.com/FIEA-AL/idigital-node-integration)
+- [NestJS Sessions](https://docs.nestjs.com/techniques/session)
+- [Express Session](https://github.com/expressjs/session)
 
 ✅ Esta implementação fornece uma base sólida e reutilizável para integração SSO IDigital em qualquer projeto NestJS.
 
