@@ -11,6 +11,10 @@
 - [Recipes & Examples](#recipes--examples)
 - [Develoment & contribution](#development--contribution)
 
+## Installation Project NestJS
+
+- [Idigital NestJS Integration](./integration-nestjs.md)
+
 ## Installation
 The library is not hosted in the NPM registry. However, fortunately, it is possible to add the library to your project via Yarn or NPM.
 
